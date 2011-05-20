@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CADUSplitterDialog</class>
+ <widget class="QDialog" name="CADUSplitterDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>610</width>
+    <height>264</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Channel Access Data Unit Splitter</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>15</x>
+     <y>20</y>
+     <width>581</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="mainLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetFixedSize</enum>
+    </property>
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
+     <number>10</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="minimumSize">
+       <size>
+        <width>541</width>
+        <height>178</height>
+       </size>
+      </property>
+      <property name="currentIndex">
+       <number>2</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>General</string>
+       </attribute>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>10</y>
+          <width>531</width>
+          <height>79</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>CADU Input file:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="infileEd">
+           <property name="text">
+            <string>/home/patrik/Documents/LRIT/data/GOES-LRIT_cadu_frames_2.cadu</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QToolButton" name="infileToolButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCheckBox" name="derandomizeCb">
+           <property name="text">
+            <string>Derandomize</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" colspan="2">
+          <widget class="QCheckBox" name="rsdecodeCb">
+           <property name="text">
+            <string>Reed Solomon error correct</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ahrptTab">
+       <attribute name="title">
+        <string>AHRPT/MODIS</string>
+       </attribute>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>10</y>
+          <width>531</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Virtual Channel Data Unit:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="3">
+          <widget class="QComboBox" name="ahrptVCIDCB">
+           <property name="maximumSize">
+            <size>
+             <width>373</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <item>
+            <property name="text">
+             <string>AVHRR/3, Advanced High Resolution Picture Transmission</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>AMSU-A1/A2, Advanced Microwave Sounding Units</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>HIRS/4, High-resolution Infrared Radiation Sounder</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>SEM, Space Environment Monitor</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>A-DCS, Advanced Data Collection System</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>IASI, Infrared Atmospheric Sounding Interferometer</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>MHS, Microwave Humidity Sounder</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>ASCAT, Advanced Scatterometer</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GOME-2, Global Ozone Monitoring Experiment-2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GRAS, Global Navigation Satellite System Receiver for Atmospheric Sounding</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Satellite housekeeping packets</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Admin messages</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Output filename:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" colspan="2">
+          <widget class="QLineEdit" name="ahrptoutfileEd"/>
+         </item>
+         <item row="1" column="3">
+          <widget class="QToolButton" name="MetOpoutfileTB">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="genAHRPTDataBtn">
+           <property name="text">
+            <string>Generate</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>78</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="lritTab">
+       <attribute name="title">
+        <string>LRIT/HRIT</string>
+       </attribute>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>1</x>
+          <y>11</y>
+          <width>531</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Rice decompressed output filename:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QLineEdit" name="lritoutfileEd">
+           <property name="text">
+            <string>/home/patrik/tmp/GOES-LRIT_cadu_frames_2.vcdu</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QToolButton" name="GOESoutfileTB">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="genGOESdataBtn">
+           <property name="text">
+            <string>Generate</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1" colspan="2">
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>358</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <zorder>buttonBox</zorder>
+  <zorder>tabWidget</zorder>
+  <zorder>tabWidget</zorder>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

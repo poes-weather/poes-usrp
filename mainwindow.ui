@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>547</width>
+    <height>329</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="application.qrc">
+    <normaloff>:/root/images/HRPT-Decoder.ico</normaloff>:/root/images/HRPT-Decoder.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QFrame" name="mainFrame">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>10</y>
+      <width>301</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string/>
+    </property>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>30</y>
+       <width>251</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string/>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>249</width>
+        <height>159</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>547</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuSatellite">
+    <property name="title">
+     <string>Satellite</string>
+    </property>
+    <addaction name="actionPredict"/>
+    <addaction name="separator"/>
+    <addaction name="actionKeplerian_elements"/>
+    <addaction name="actionActive_satellites"/>
+    <addaction name="actionOrbit_data"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionGroundstation"/>
+    <addaction name="actionRig"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionGPS"/>
+    <addaction name="separator"/>
+    <addaction name="actionSplit_CADU_to_file"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuSatellite"/>
+   <addaction name="menuSettings"/>
+   <addaction name="menuView"/>
+   <addaction name="menuTools"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave_As"/>
+   <addaction name="separator"/>
+   <addaction name="actionGroundstation"/>
+   <addaction name="actionRig"/>
+   <addaction name="separator"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/root/images/open.png</normaloff>:/root/images/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/root/images/save.png</normaloff>:/root/images/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionGroundstation">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/root/images/gohome.png</normaloff>:/root/images/gohome.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ground station...</string>
+   </property>
+  </action>
+  <action name="actionKeplerian_elements">
+   <property name="text">
+    <string>Keplerian elements...</string>
+   </property>
+  </action>
+  <action name="actionOrbit_data">
+   <property name="text">
+    <string>Orbit data...</string>
+   </property>
+  </action>
+  <action name="actionPredict">
+   <property name="text">
+    <string>Pass list...</string>
+   </property>
+  </action>
+  <action name="actionActive_satellites">
+   <property name="text">
+    <string>Active satellites...</string>
+   </property>
+  </action>
+  <action name="actionRig">
+   <property name="icon">
+    <iconset resource="application.qrc">
+     <normaloff>:/root/images/system-run.png</normaloff>:/root/images/system-run.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rig...</string>
+   </property>
+  </action>
+  <action name="actionGPS">
+   <property name="text">
+    <string>GPS</string>
+   </property>
+  </action>
+  <action name="actionSplit_CADU_to_file">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Split CADU to files...</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="application.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/root">
+        <file>images/filesave.xpm</file>
+        <file>images/fileopen.xpm</file>
+        <file>images/save.png</file>
+        <file>images/open.png</file>
+        <file>images/HRPT-Decoder.ico</file>
+        <file>images/gohome.png</file>
+        <file>images/back.png</file>
+        <file>images/edit_add.png</file>
+        <file>images/edit_remove.png</file>
+        <file>images/forward.png</file>
+        <file>images/usrp_64.png</file>
+        <file>images/converter_48.png</file>
+        <file>images/stepper_64.png</file>
+        <file>images/system-run.png</file>
+        <file>images/compass-1.png</file>
+    </qresource>
+</RCC>
