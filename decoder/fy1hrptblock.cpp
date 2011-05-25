@@ -284,7 +284,7 @@ quint16 TFY1HRPT::getPixel_16(int channel, int sample)
   if(!check())
      return 0;
 
-  if(block->isNorthBound())
+  if(!block->isNorthBound())
      pos = channel + sample * FY1_HRPT_NUM_CHANNELS;
   else
      pos = channel + (FY1_HRPT_SCAN_WIDTH - sample - 1) * FY1_HRPT_NUM_CHANNELS;

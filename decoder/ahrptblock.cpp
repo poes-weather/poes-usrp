@@ -454,7 +454,7 @@ quint16 TAHRPT::getPixel_16(int channel, int sample)
   if(!check())
      return 0;
 
-  if(block->isNorthBound())
+  if(!block->isNorthBound())
      pos = channel + sample * AHRPT_NUM_CHANNELS;
   else
      pos = channel + (AHRPT_SCAN_WIDTH - sample - 1) * AHRPT_NUM_CHANNELS;

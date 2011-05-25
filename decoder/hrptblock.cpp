@@ -279,10 +279,10 @@ quint16 THRPT::getPixel_16(int channel, int sample)
   if(!check())
      return 0;
 
-  if(block->isNorthBound())
-     pos = channel + sample * HRPT_NUM_CHANNELS;
+  if(!block->isNorthBound())
+     pos = channel + sample * HRPT_NUM_CHANNELS; // left to right
   else
-     pos = channel + (HRPT_SCAN_WIDTH - sample - 1) * HRPT_NUM_CHANNELS;
+     pos = channel + (HRPT_SCAN_WIDTH - sample - 1) * HRPT_NUM_CHANNELS; // right to left
 
   pixel = scanLine[pos] & 0x03ff;
 
