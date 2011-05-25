@@ -43,6 +43,7 @@ public:
 
     int  setImageType(int type);
     int  setImageChannel(int channel);
+    int  getNumChannels(void);
 
     bool readFrameScan(int frame_nr);
     bool scanToImage(int scan_nr, QImage *image);

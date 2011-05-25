@@ -235,6 +235,12 @@ int TFY1HRPT::setImageChannel(int channel)
 }
 
 //---------------------------------------------------------------------------
+int TFY1HRPT::getNumChannels(void)
+{
+    return FY1_HRPT_NUM_CHANNELS;
+}
+
+//---------------------------------------------------------------------------
 // frame_nr is zero based (0, 1, 2, ... frames - 1)
 bool TFY1HRPT::readFrameScanLine(int frame_nr)
 {

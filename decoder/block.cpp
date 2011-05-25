@@ -471,6 +471,38 @@ void TBlock::setImageChannel(int channel)
 }
 
 //---------------------------------------------------------------------------
+int TBlock::getNumChannels(void)
+{
+    int channels;
+
+    if(!block)
+       return 0;
+
+    switch(blocktype) {
+       case HRPT_BlockType:
+          channels = ((THRPT *) block)->getNumChannels();
+       break;
+
+       case AHRPT_BlockType:
+          channels = ((TAHRPT *) block)->getNumChannels();
+       break;
+#if 0
+       case MN1HRPT_BlockType:
+          channels = ((TMN1HRPT *) block)->getNumChannels();
+       break;
+#endif
+       case FY1HRPT_BlockType:
+          channels = ((TFY1HRPT *) block)->getNumChannels();
+       break;
+
+       default:
+          channels = 0;
+    }
+
+    return channels;
+}
+
+//---------------------------------------------------------------------------
 void TBlock::setImageType(Block_ImageType type)
 {
    if(!block)

@@ -43,6 +43,7 @@ public:
     int   getChannel(void);
     bool  isNorthbound(void);
     int   getImageType(void);
+    void  setMaxChannels(int channels);
 
     void setFrames(QString format, long int frames = 0);
 

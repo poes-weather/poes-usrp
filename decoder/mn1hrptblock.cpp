@@ -221,6 +221,12 @@ int TMN1HRPT::setImageChannel(int channel)
 }
 
 //---------------------------------------------------------------------------
+int TMN1HRPT::getNumChannels(void)
+{
+    return MN1_HRPT_NUM_CHANNELS;
+}
+
+//---------------------------------------------------------------------------
 // frame_nr is zero based (0, 1, 2, ... frames - 1)
 bool TMN1HRPT::readFrameScan(int frame_nr)
 {

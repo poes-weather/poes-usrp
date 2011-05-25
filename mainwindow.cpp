@@ -279,6 +279,7 @@ void MainWindow::on_actionOpen_triggered()
   }
 
   imageWidget->setFrames(block->getBlockTypeStr(index), block->getFrames());
+  imageWidget->setMaxChannels(block->getNumChannels());
 
   ui->actionSave_As->setEnabled(rc);
   setCaption(FileName);

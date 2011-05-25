@@ -117,6 +117,7 @@ class TBlock
 
     void setImageChannel(int channel);
     int  getImageChannel(void) { return imageChannel; }
+    int  getNumChannels(void);
 
     int  getWidth(void);
     int  getHeight(void);

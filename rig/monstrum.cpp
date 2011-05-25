@@ -218,14 +218,13 @@ QString TMonstrum::statusString(void)
         str2 = "Error: Failed to read Monstrum status!";
     else {
         str2.sprintf("\
-                     X0 Limit switch state: %s\n\
-                     X180 Limit switch state: %s\n\n\
-                     Y0 Limit switch state: %s\n\
-                     Y180 Limit switch state: %s\n\n\
-                     Error code: %d\n\
-                     Warning code: %d\n\n\
-                     Rotor state: %s\n",
-
+X0 Limit switch state: %s\n\
+X180 Limit switch state: %s\n\n\
+Y0 Limit switch state: %s\n\
+Y180 Limit switch state: %s\n\n\
+Error code: %d\n\
+Warning code: %d\n\n\
+Rotor state: %s\n",
                      iobuff[3] == '1' ? "On":"Off",
                      iobuff[4] == '1' ? "On":"Off",
                      iobuff[5] == '1' ? "On":"Off",

@@ -200,6 +200,12 @@ int TAHRPT::setImageChannel(int channel)
 }
 
 //---------------------------------------------------------------------------
+int TAHRPT::getNumChannels(void)
+{
+    return AHRPT_NUM_CHANNELS;
+}
+
+//---------------------------------------------------------------------------
 // frame_nr is zero based (0, 1, 2, ... frames - 1)
 bool TAHRPT::readFrameScanLine(int frame_nr)
 {

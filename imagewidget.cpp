@@ -61,14 +61,13 @@ int ImageWidget::getChannel(void)
 
    channel = m_ui->channelSpinBox->value();
 
-#if 0   // todo
-   if(channel < 1)
-       channel = 1;
-   else if(channel > 5)
-       channel = 5;
-#endif
-
   return (channel - 1);
+}
+
+//---------------------------------------------------------------------------
+void ImageWidget::setMaxChannels(int channels)
+{
+    m_ui->channelSpinBox->setMaximum(channels);
 }
 
 //---------------------------------------------------------------------------
