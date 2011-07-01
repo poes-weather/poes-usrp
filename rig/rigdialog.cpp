@@ -93,7 +93,9 @@ RigDialog::RigDialog(QWidget *parent) :
     m_ui->parkAzSp->setValue(rig->rotor->parkAz);
 
     // control
+#if 0
     rig->rotor->openPort();
+#endif
 
     m_ui->az_dial->setValue(rig->rotor->getAzimuth());
     m_ui->az_spinBox->setValue(rig->rotor->getAzimuth());

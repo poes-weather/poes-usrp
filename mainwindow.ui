@@ -82,6 +82,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave_As"/>
+    <addaction name="actionClose"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuSatellite">
@@ -220,6 +221,11 @@
    </property>
    <property name="text">
     <string>Split CADU to files...</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
    </property>
   </action>
  </widget>

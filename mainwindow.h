@@ -91,6 +91,8 @@ private slots:
      void on_actionSave_As_triggered();
      void on_actionOpen_triggered();
 
+     void on_actionClose_triggered();
+
 protected:
      void closeEvent(QCloseEvent *event);
      bool processData(const char *filename, int blockType);

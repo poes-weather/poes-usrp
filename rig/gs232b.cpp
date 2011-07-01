@@ -112,8 +112,9 @@ bool TGS232B::openCOM(void)
     }
 
     if(rc) {
-#if 0
+#if 1
         // set speed
+        delay(100);
         sprintf(iobuff, "X%d\r\n", (int) speed);
         write_buffer(iobuff);
         delay(100);

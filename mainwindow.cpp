@@ -83,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
   connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
   ui->menuFile->addAction(exitAct);
   ui->actionSave_As->setEnabled(false);
+  ui->actionClose->setEnabled(false);
 
   ui->menuView->addAction(ui->mainToolBar->toggleViewAction());
   ui->mainToolBar->setWindowTitle("Toolbar");
@@ -282,6 +283,7 @@ void MainWindow::on_actionOpen_triggered()
   imageWidget->setMaxChannels(block->getNumChannels());
 
   ui->actionSave_As->setEnabled(rc);
+  ui->actionClose->setEnabled(rc);
   setCaption(FileName);
 
   QApplication::restoreOverrideCursor();
@@ -369,6 +371,22 @@ void MainWindow::on_actionSave_As_triggered()
  ui->statusBar->showMessage(str);
 
  QApplication::restoreOverrideCursor();
+}
+
+//---------------------------------------------------------------------------
+void MainWindow::on_actionClose_triggered()
+{
+    if(blockImage)
+       delete blockImage;
+    blockImage = NULL;
+    block->close();
+
+    ui->statusBar->showMessage("");
+    setCaption();
+    imageWidget->setVisible(false);
+
+    imageLabel->setPixmap(NULL);
+    ui->actionClose->setEnabled(false);
 }
 
 //---------------------------------------------------------------------------
@@ -765,8 +783,7 @@ TSat *MainWindow::getNextSat(void)
  PList  *list;
  double utc_daynum, daynum;
  TSat   *nextsat = NULL;
- TSat   *nextsat2;
- int    i;
+ int    i, flags;
 
     if(!countSats(1))
         return NULL;
@@ -800,8 +817,9 @@ TSat *MainWindow::getNextSat(void)
         }
     }
 
-    // select satellite that is closest to qth
+    // find the satellite that is closest to qth
     daynum = 1e20;
+    nextsat = NULL;
     for(i=0; i<list->Count; i++) {
         sat = (TSat *) list->ItemAt(i);
         if(sat->aostime < daynum) {
@@ -810,28 +828,33 @@ TSat *MainWindow::getNextSat(void)
         }
     }
 
-    if(nextsat && rig->passthresholds()) {
-        // find a satellite pass that is within defined pass thresholds
-        // and check if just found nextsat can be overrun
-        daynum = 1e20;
-        if(!nextsat->CheckThresholds(rig)) {
-            nextsat2 = NULL;
-            for(i=0; i<list->Count; i++) {
-                sat = (TSat *) list->ItemAt(i);
-                if(sat == nextsat || !sat->CheckThresholds(rig))
-                    continue;
+    // check if there is an overlap.
+    // if so select the satellite with higher elevation
+    if(nextsat) {
+        for(i=0; i<list->Count; i++) {
+            sat = (TSat *) list->ItemAt(i);
+            if(sat == nextsat)
+                continue;
 
-                if(sat->aostime < daynum) {
-                    nextsat2 = sat;
-                    daynum = sat->aostime;
+            if(sat->sat_max_ele > nextsat->sat_max_ele) {
+                // overlap check
+                flags = 0;
+                if(sat->aostime < nextsat->aostime) {
+                    // partial (happens before) || full overlap
+                    if(sat->lostime > nextsat->aostime || sat->lostime > nextsat->lostime)
+                        flags |= 1;
                 }
-            }
+                else if(sat->aostime < nextsat->lostime && sat->lostime > nextsat->lostime) {
+                    // partial overlap happens after
+                    flags |= 1;
+                }
 
-            if(nextsat2) {
-                if(nextsat2->aostime < nextsat->lostime)
-                    nextsat = nextsat2;
+                if(flags & 1)
+                    nextsat = sat;
             }
         }
+
+        nextsat->CheckThresholds(rig);
     }
 
     delete list;
@@ -905,3 +928,4 @@ void MainWindow::on_actionSplit_CADU_to_file_triggered()
     delete dlg;
 #endif
 }
+
