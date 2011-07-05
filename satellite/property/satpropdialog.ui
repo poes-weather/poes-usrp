@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SatPropDialog</class>
+ <widget class="QDialog" name="SatPropDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>699</width>
+    <height>536</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Satellite Properties</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>686</width>
+     <height>380</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="maingridLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetFixedSize</enum>
+    </property>
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>Select satellite(s)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="2">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="minimumSize">
+       <size>
+        <width>490</width>
+        <height>341</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>490</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Image</string>
+       </attribute>
+       <widget class="QTabWidget" name="tabWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>511</width>
+          <height>261</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_5">
+         <attribute name="title">
+          <string>RGB</string>
+         </attribute>
+         <widget class="QWidget" name="">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>451</width>
+            <height>151</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0" colspan="7">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Daytime RGB composite channels</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Red</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="day_rgb_r">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>64</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Green</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QSpinBox" name="day_rgb_g">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>64</number>
+             </property>
+             <property name="value">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Blue</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="5">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Nighttime RGB composite channels</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>Red</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSpinBox" name="night_rgb_r">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>64</number>
+             </property>
+             <property name="value">
+              <number>3</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>Green</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QSpinBox" name="night_rgb_g">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>64</number>
+             </property>
+             <property name="value">
+              <number>4</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QLabel" name="label_13">
+             <property name="text">
+              <string>Blue</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="5">
+            <widget class="QSpinBox" name="day_rgb_b">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>64</number>
+             </property>
+             <property name="value">
+              <number>4</number>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="5">
+            <widget class="QSpinBox" name="night_rgb_b">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>64</number>
+             </property>
+             <property name="value">
+              <number>5</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="4" colspan="2">
+            <widget class="QPushButton" name="applyRGB">
+             <property name="text">
+              <string>Apply</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <zorder>label_2</zorder>
+         <zorder>label</zorder>
+         <zorder>label_4</zorder>
+         <zorder>day_rgb_r</zorder>
+         <zorder>day_rgb_g</zorder>
+         <zorder>day_rgb_b</zorder>
+         <zorder>label_5</zorder>
+         <zorder>label_3</zorder>
+         <zorder>label_12</zorder>
+         <zorder>night_rgb_r</zorder>
+         <zorder>night_rgb_g</zorder>
+         <zorder>night_rgb_b</zorder>
+         <zorder>label_13</zorder>
+         <zorder>label_14</zorder>
+         <zorder>applyRGB</zorder>
+         <zorder>applyRGB</zorder>
+        </widget>
+        <widget class="QWidget" name="tab_6">
+         <attribute name="title">
+          <string>NDVI</string>
+         </attribute>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QDialogButtonBox" name="buttonBox">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="standardButtons">
+       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QListWidget" name="satlistWidget">
+      <property name="minimumSize">
+       <size>
+        <width>180</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>180</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>SatPropDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>SatPropDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
