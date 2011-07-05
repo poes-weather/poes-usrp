@@ -32,6 +32,7 @@
 #include <math.h>
 #include <stdio.h>
 #include "satscript.h"
+#include "satprop.h"
 
 const QString file_date_format  = "yyyyMMdd_hhmmss";
 
@@ -181,7 +182,7 @@ class TSat
    int    GetRecDuration(void);
 
    bool   SavePassinfo(void);
-   bool   ReadPassinfo(QString inifile);
+   bool   ReadPassinfo(QString hrptfile);
 
    void   SatellitePasses(TRig *rig, QTableWidget *grid, QDateTime utc, int mode=0);
 
@@ -225,6 +226,7 @@ class TSat
    double moon_azi, moon_ele, moon_lat, moon_lon;
 
    TSatScript *sat_scripts;
+   TSatProp *sat_props;
 
    char *_str, *_line1, *_line2;
 

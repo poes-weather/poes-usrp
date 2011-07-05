@@ -41,6 +41,7 @@
 #include "trackwidget.h"
 #include "imagewidget.h"
 #include "activesatdialog.h"
+#include "satpropdialog.h"
 #include "rigdialog.h"
 #include "gpsdialog.h"
 
@@ -70,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
   settings  = new TSettings;
   rig       = new TRig;
   gps       = NULL;
+  opensat   = new TSat;
 
   QCoreApplication::setOrganizationName("poes-weather");
   QCoreApplication::setOrganizationDomain("poes-weather.com");
@@ -124,6 +126,8 @@ MainWindow::~MainWindow()
 
     if(gps)
         delete gps;
+
+    delete opensat;
 
     clearSatList(satList, 1);
 }
@@ -242,12 +246,7 @@ void MainWindow::on_actionOpen_triggered()
 
   // LRIT/HRIT must be uncompressed before rendering
   if(rc && block->isCompressed()) {
-#if 1
-
-     // ui->statusBar->showMessage("Compression not supported");
-     // rc = false;
-
-#else
+#if 0
       QApplication::restoreOverrideCursor();
 
       rc = false;
@@ -293,6 +292,7 @@ void MainWindow::on_actionOpen_triggered()
 bool MainWindow::processData(const char *filename, int blockType)
 {
  QString str;
+ bool rc;
 
   if(!block->setBlockType((Block_Type) blockType)) {
      str.sprintf("Unsupported type: %s %s",
@@ -303,9 +303,22 @@ bool MainWindow::processData(const char *filename, int blockType)
      return false;
   }
 
+  if(!(rc = opensat->ReadPassinfo(filename))) {
+      str.sprintf("Warning: Couldn't read passinfo file for %s", filename);
+      ui->statusBar->showMessage(str);
+  }
+  else {
+      *block->satprop = *opensat->sat_props;
+
+      TSat *sat = getSat(satList, opensat->name);
+      if(sat)
+          *block->satprop = *sat->sat_props;
+  }
+
   block->setImageChannel(imageWidget->getChannel());
-  block->setNorthBound(imageWidget->isNorthbound());
   block->setImageType((Block_ImageType) imageWidget->getImageType());
+  block->setNorthBound(rc ? opensat->isNorthbound() : imageWidget->isNorthbound());
+  block->checkSatProps();
 
   if(!block->open(filename)) {
      str.sprintf("No frames found in file %s", filename);
@@ -448,7 +461,7 @@ void MainWindow::readSettings(void)
 
 
     // NOTICE:
-    // All component settings must first be read befor any window settings
+    // All component settings must first be read before any window settings
     // Possible errors should be reported last
 
     qth->readSettings(&reg);
@@ -642,11 +655,12 @@ void MainWindow::writeSatelliteSettings(void)
        str.sprintf("Spacecraft_%d", i+1);
 
        reg.beginGroup(str);
-          reg.setValue("Name",     sat->name);
-          reg.setValue("TLE_1",    sat->line1);
-          reg.setValue("TLE_2",    sat->line2);
+          reg.setValue("Name",  sat->name);
+          reg.setValue("TLE_1", sat->line1);
+          reg.setValue("TLE_2", sat->line2);
 
           sat->sat_scripts->writeSettings(&reg);
+          sat->sat_props->writeSettings(&reg);
        reg.endGroup();
     }
 }
@@ -685,6 +699,7 @@ void MainWindow::readSatelliteSettings(void)
          }
 
          sat->sat_scripts->readSettings(&reg);
+         sat->sat_props->readSettings(&reg);
       reg.endGroup();
 
 
@@ -768,6 +783,26 @@ void MainWindow::on_actionActive_satellites_triggered()
 
     if(dlg.exec())
         trackWidget->updateSatCb();
+}
+
+//---------------------------------------------------------------------------
+void MainWindow::on_actionProperties_triggered()
+{
+    SatPropDialog dlg(satList, this);
+
+    if(countSats()) {
+        if(dlg.exec()) {
+            if(blockImage) {
+                TSat *sat = getSat(satList, opensat->name);
+                if(sat) {
+                    *block->satprop = *sat->sat_props;
+                    if(block->getImageType() > RGB_ImageType)
+                        renderImage();
+                }
+            }
+        }
+    }
+
 }
 
 //---------------------------------------------------------------------------
@@ -929,3 +964,4 @@ void MainWindow::on_actionSplit_CADU_to_file_triggered()
 #endif
 }
 
+//---------------------------------------------------------------------------

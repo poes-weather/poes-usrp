@@ -94,6 +94,8 @@
     <addaction name="actionKeplerian_elements"/>
     <addaction name="actionActive_satellites"/>
     <addaction name="actionOrbit_data"/>
+    <addaction name="separator"/>
+    <addaction name="actionProperties"/>
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
@@ -226,6 +228,11 @@
   <action name="actionClose">
    <property name="text">
     <string>Close</string>
+   </property>
+  </action>
+  <action name="actionProperties">
+   <property name="text">
+    <string>Properties...</string>
    </property>
   </action>
  </widget>

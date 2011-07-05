@@ -93,6 +93,8 @@ private slots:
 
      void on_actionClose_triggered();
 
+     void on_actionProperties_triggered();
+
 protected:
      void closeEvent(QCloseEvent *event);
      bool processData(const char *filename, int blockType);
@@ -123,6 +125,7 @@ private:
     TSettings *settings;
     TRig      *rig;
     GPSDialog *gps;
+    TSat      *opensat;
 
     TrackWidget *trackWidget;
     ImageWidget  *imageWidget;

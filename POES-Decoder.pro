@@ -49,7 +49,9 @@ SOURCES += main.cpp \
     decoder/cadu.cpp \
     utils/azeldialog.cpp \
     tools/cadusplitterdialog.cpp \
-    rig/monstrum.cpp
+    rig/monstrum.cpp \
+    satellite/property/satprop.cpp \
+    satellite/property/satpropdialog.cpp
 HEADERS += mainwindow.h \
     decoder/hrptblock.h \
     version.h \
@@ -102,7 +104,9 @@ HEADERS += mainwindow.h \
     decoder/cadu.h \
     utils/azeldialog.h \
     tools/cadusplitterdialog.h \
-    rig/monstrum.h
+    rig/monstrum.h \
+    satellite/property/satprop.h \
+    satellite/property/satpropdialog.h
 DEFINES += _CRT_SECURE_NO_WARNINGS
 FORMS += mainwindow.ui \
     satellite/station/stationdialog.ui \
@@ -118,7 +122,8 @@ FORMS += mainwindow.ui \
     tools/gps/gpsdialog.ui \
     rig/jrkconfdialog.ui \
     utils/azeldialog.ui \
-    tools/cadusplitterdialog.ui
+    tools/cadusplitterdialog.ui \
+    satellite/property/satpropdialog.ui
 RESOURCES += application.qrc
 QT += network
 INCLUDEPATH += decoder \
@@ -129,6 +134,7 @@ INCLUDEPATH += decoder \
     satellite/orbitdata \
     satellite/track \
     satellite/active \
+    satellite/property \
     utils \
     rig \
     rig/qextserialport \

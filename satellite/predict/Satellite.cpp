@@ -55,6 +55,7 @@ TSat::TSat(void)
     _line2 = NULL;
 
     sat_scripts = new TSatScript;
+    sat_props = new TSatProp;
 
     Zero();
 }
@@ -67,6 +68,7 @@ TSat::TSat(TSat *src)
     _line2 = NULL;
 
     sat_scripts = new TSatScript;
+    sat_props = new TSatProp;
 
     Zero();
     Copy(src);
@@ -90,6 +92,7 @@ void TSat::Copy(TSat *src)
     strcpy(name, src->name);
 
     *sat_scripts = *src->sat_scripts;
+    *sat_props   = *src->sat_props;
 
     aostime     = src->aostime;
     rec_aostime = src->rec_aostime;
@@ -143,7 +146,9 @@ void TSat::Zero(void)
 TSat::~TSat(void)
 {
     destroy_tmp_tle_str();
+
     delete sat_scripts;
+    delete sat_props;
 }
 
 //---------------------------------------------------------------------------
@@ -1123,16 +1128,56 @@ bool TSat::SavePassinfo(void)
     reg.endGroup();
 
     sat_scripts->writeSettings(&reg);
+    sat_props->writeSettings(&reg);
 
     return true;
 }
 
 //---------------------------------------------------------------------------
-bool TSat::ReadPassinfo(QString /*inifile*/)
+bool TSat::ReadPassinfo(QString hrptfile)
 {
-    // TODO: support this feature
+    QFileInfo fi(hrptfile);
+    QString   inifile = fi.absolutePath() + "/" + fi.baseName() + ".ini";
 
- return false;
+    fi.setFile(inifile);
+    if(!fi.exists())
+        return false;
+
+    QSettings reg(inifile, QSettings::IniFormat);
+    QString str1, str2, str3;
+
+    reg.beginGroup("TLE");
+      str1 = reg.value("Name",  "").toString();
+      str2 = reg.value("TLE_1", "").toString();
+      str3 = reg.value("TLE_2", "").toString();
+    reg.endGroup();
+
+    if(str1.isEmpty() || str2.isEmpty() || str3.isEmpty())
+        return false;
+
+    if(!TLEKepCheck((char *)str1.toStdString().c_str(),
+                    (char *)str2.toStdString().c_str(),
+                    (char *)str3.toStdString().c_str()))
+        return false;
+
+    reg.beginGroup("PassInfo");
+      rec_aostime = reg.value("AOS").toDouble();
+      rec_lostime = reg.value("LOS").toDouble();
+    reg.endGroup();
+
+    reg.beginGroup("Station");
+       station_name = reg.value("Name", "Unknown").toString();
+       obs_geodetic.lon = reg.value("Longitude", 0).toDouble();
+       obs_geodetic.lat = reg.value("Latitude",  0).toDouble();
+       obs_geodetic.alt = reg.value("Altitude",  0).toDouble();
+    reg.endGroup();
+
+    CalcAll(rec_aostime);
+
+    sat_scripts->readSettings(&reg);
+    sat_props->readSettings(&reg);
+
+ return true;
 }
 
 //---------------------------------------------------------------------------

@@ -157,7 +157,17 @@
        </item>
        <item>
         <property name="text">
-         <string>RGB</string>
+         <string>RGB (Default)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>RGB Day</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>RGB Night</string>
         </property>
        </item>
       </widget>

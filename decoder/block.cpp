@@ -28,6 +28,7 @@
 #include "fy1hrptblock.h"
 #include "lritblock.h"
 
+
 #if 0
 static const quint8 CADU_SYNC[CADU_SYNC_SIZE] = {
   0x1A, 0xCF, 0xFC, 0x1D,
@@ -60,6 +61,7 @@ TBlock::TBlock(void)
    imageChannel = 0; // zero based
 
    cadu = new TCADU;
+   satprop = new TSatProp;
 }
 
 //---------------------------------------------------------------------------
@@ -69,6 +71,7 @@ TBlock::~TBlock(void)
     freeBlock();
 
     delete cadu;
+    delete satprop;
 }
 
 //---------------------------------------------------------------------------
@@ -500,6 +503,12 @@ int TBlock::getNumChannels(void)
     }
 
     return channels;
+}
+
+//---------------------------------------------------------------------------
+void TBlock::checkSatProps(void)
+{
+    satprop->checkChannels(getNumChannels());
 }
 
 //---------------------------------------------------------------------------

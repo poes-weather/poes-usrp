@@ -211,8 +211,8 @@ int THRPT::setImageType(int type)
 {
    if((Block_ImageType) type < Gray_ImageType)
       type = (int) Gray_ImageType;
-   else if((Block_ImageType) type > RGB_ImageType)
-      type = (int) RGB_ImageType;
+   else if((Block_ImageType) type > Max_ImageType)
+      type = (int) Max_ImageType;
 
  return type;
 }
@@ -303,7 +303,7 @@ quint8 THRPT::getPixel_8(int channel, int sample)
 bool THRPT::frameToImage(int frame_nr, QImage *image)
 {
  uchar *imagescan, r, g, b;
- int x, y;
+ int x, y, *ch_rgb;
 
   if(!check(1) || image == NULL)
      return false;
@@ -320,22 +320,40 @@ bool THRPT::frameToImage(int frame_nr, QImage *image)
   if(imagescan == NULL)
      return false;
 
+  switch(block->getImageType()) {
+  case RGB_Day_ImageType:
+      ch_rgb = block->satprop->rgb_day();
+      break;
+  case RGB_Night_ImageType:
+      ch_rgb = block->satprop->rgb_night();
+      break;
+  default:
+      break;
+  }
+
   for(x=0; x<HRPT_SCAN_WIDTH; x++) {
-     switch(block->getImageType()) {
-        case Gray_ImageType:
-           r = getPixel_8(block->getImageChannel(), x);
-           g = r;
-           b = r;
-        break;
+      switch(block->getImageType()) {
+      case Gray_ImageType:
+          r = getPixel_8(block->getImageChannel(), x);
+          g = r;
+          b = r;
+          break;
 
-        case RGB_ImageType:
-           r = getPixel_8(1, x); // ch 2
-           g = getPixel_8(0, x); // ch 1
-           b = getPixel_8(3, x); // ch 4
-        break;
+      case RGB_ImageType: // defaults to daytime RGB
+          r = getPixel_8(0, x); // ch 1
+          g = getPixel_8(1, x); // ch 2
+          b = getPixel_8(3, x); // ch 4
+          break;
 
-        default:
-           return false;
+      case RGB_Day_ImageType:
+      case RGB_Night_ImageType:
+          r = getPixel_8(ch_rgb[0] - 1, x);
+          g = getPixel_8(ch_rgb[1] - 1, x);
+          b = getPixel_8(ch_rgb[2] - 1, x);
+          break;
+
+      default:
+          return false;
      }
 
      *imagescan++ = r;

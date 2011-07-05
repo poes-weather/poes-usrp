@@ -25,12 +25,13 @@
 #include <QtGlobal>
 #include <stdio.h>
 
+#include "satprop.h"
 #include "cadu.h"
 
 //---------------------------------------------------------------------------
 #define B_BYTESWAP          1   // little endian data
 #define B_NORTHBOUND        2   // pass is northbound
-#define B_SYNC_FOUND        4   // first syck found
+#define B_SYNC_FOUND        4   // first sync found
 
 //---------------------------------------------------------------------------
 #define CADU_SYNC_SIZE       4
@@ -53,6 +54,10 @@ typedef enum Block_ImageType_t
 {
     Gray_ImageType = 0,
     RGB_ImageType,
+    RGB_Day_ImageType,
+    RGB_Night_ImageType,
+
+    Max_ImageType, // must be last
 } Block_ImageType;
 
 
@@ -75,6 +80,7 @@ typedef enum Block_ImageType_t
 class QImage;
 class QString;
 class TCADU;
+class TSatProp;
 
 //---------------------------------------------------------------------------
 class TBlock
@@ -118,12 +124,14 @@ class TBlock
     void setImageChannel(int channel);
     int  getImageChannel(void) { return imageChannel; }
     int  getNumChannels(void);
+    void checkSatProps(void);
 
     int  getWidth(void);
     int  getHeight(void);
     bool toImage(QImage *image);
 
     int  Modes;
+    TSatProp *satprop;
 
  protected:
     bool init(void);

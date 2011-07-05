@@ -123,7 +123,7 @@ void ImageWidget::on_enhanceCb_currentIndexChanged(int index)
 
     index = index;
 
-    b->setImageType((Block_ImageType) getImageType());
+    b->setImageType((Block_ImageType) index);
     mw->renderImage();
 }
 

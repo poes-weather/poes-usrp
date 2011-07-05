@@ -130,6 +130,7 @@ long int TMN1HRPT::countFrames(void)
   while(block->findCADUFrameSync()) {
      pos = ftell(fp) - CADU_SYNC_SIZE;
      block->Modes |= B_SYNC_FOUND;
+     qDebug("ASM Sync marker 0x%08x [%d:%s]", (unsigned int)pos, __LINE__, __FILE__);
 
      // set pointer at byte 22 from sync
      if(fseek(fp, MN1_HRPT_IMAGE_START - CADU_SYNC_SIZE, SEEK_CUR) != 0)
@@ -202,8 +203,8 @@ int TMN1HRPT::setImageType(int type)
 {
    if((Block_ImageType) type < Gray_ImageType)
       type = (int) Gray_ImageType;
-   else if((Block_ImageType) type > RGB_ImageType)
-      type = (int) RGB_ImageType;
+   else if((Block_ImageType) type > Max_ImageType)
+      type = (int) Max_ImageType;
 
  return type;
 }
@@ -337,7 +338,7 @@ bool TMN1HRPT::scanToImage(int scan_nr, QImage *image)
  uchar *imagescan;
  quint8 r, g, b;
  long int pos;
- int i, j, y, ch, width;
+ int i, j, y, ch, width, *ch_rgb;
 
  if(!readFrameScan(scan_nr))
     return false;
@@ -354,6 +355,18 @@ bool TMN1HRPT::scanToImage(int scan_nr, QImage *image)
   it = block->getImageType();
   ch = block->getImageChannel();
 
+  switch(it) {
+  case RGB_Day_ImageType:
+      ch_rgb = block->satprop->rgb_day();
+      break;
+  case RGB_Night_ImageType:
+      ch_rgb = block->satprop->rgb_night();
+      break;
+  default:
+      break;
+  }
+
+
   // width / 4 = 385 samples needed to produce one scanline
   width = (MN1_HRPT_SCAN_WIDTH >> 2);
 
@@ -363,21 +376,28 @@ bool TMN1HRPT::scanToImage(int scan_nr, QImage *image)
      memcpy(imgBlock, scanLine + pos, MN1_HRPT_CHANNEL_SIZE * MN1_HRPT_NUM_CHANNELS);
 
      for(j=0; j<4; j++) {
-        switch(it) {
-           case Gray_ImageType:
-              r = getPixel_8(ch, j);
-              g = r;
-              b = r;
-           break;
+         switch(it) {
+         case Gray_ImageType:
+             r = getPixel_8(ch, j);
+             g = r;
+             b = r;
+         break;
 
-           case RGB_ImageType:
-              r = getPixel_8(2, j); // ch 3
-              g = getPixel_8(1, j); // ch 2
-              b = getPixel_8(0, j); // ch 1
-           break;
+         case RGB_ImageType:
+             r = getPixel_8(0, j); // ch 1
+             g = getPixel_8(1, j); // ch 2
+             b = getPixel_8(5, j); // ch 5
+         break;
 
-           default:
-              return false;
+         case RGB_Day_ImageType:
+         case RGB_Night_ImageType:
+             r = getPixel_8(ch_rgb[0] - 1, j);
+             g = getPixel_8(ch_rgb[1] - 1, j);
+             b = getPixel_8(ch_rgb[2] - 1, j);
+         break;
+
+         default:
+             return false;
         }
 
         *imagescan++ = r;
