@@ -22,8 +22,9 @@
 #ifndef RGBCONF_H
 #define RGBCONF_H
 
+#include <QString>
+
 class QSettings;
-class QString;
 
 class TRGBConf
 {
