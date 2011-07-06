@@ -19,14 +19,15 @@
     Web: <http://www.poes-weather.com>
 */
 //---------------------------------------------------------------------------
+#include <QKeyEvent>
 #include <string.h>
 
 #include "satpropdialog.h"
 #include "ui_satpropdialog.h"
 #include "plist.h"
 #include "Satellite.h"
+#include "satutil.h"
 #include "satprop.h"
-
 
 //---------------------------------------------------------------------------
 SatPropDialog::SatPropDialog(PList *satList, QWidget *parent) :
@@ -46,6 +47,8 @@ SatPropDialog::SatPropDialog(PList *satList, QWidget *parent) :
         ui->satlistWidget->addItem(sat->name);
     }
     ui->satlistWidget->sortItems();
+
+    selsat = NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -55,45 +58,220 @@ SatPropDialog::~SatPropDialog()
 }
 
 //---------------------------------------------------------------------------
-TSat *SatPropDialog::getSat(QString name)
+int SatPropDialog::countSelected(QListWidget *lw)
 {
-    TSat *sat;
-    int i;
+    QListWidgetItem* item;
+    int i, n = 0;
 
-    for(i=0; i<satlist->Count; i++) {
-        sat = (TSat *) satlist->ItemAt(i);
-        if(strcmp(sat->name, name.toStdString().c_str()) == 0)
-            return sat;
+    for(i=0; i<lw->count(); i++) {
+        item = (QListWidgetItem *) lw->item(i);
+        if(item->isSelected())
+            n++;
     }
 
-    return NULL;
+    return n;
+}
+
+//---------------------------------------------------------------------------
+int SatPropDialog::finditem(QListWidget *lw, const QString& str)
+{
+    QListWidgetItem* item;
+    int i;
+
+    for(i=0; i<lw->count(); i++) {
+        item = (QListWidgetItem *) lw->item(i);
+        if(item->text() == str)
+            return i;
+    }
+
+    return -1;
 }
 
 //---------------------------------------------------------------------------
 void SatPropDialog::on_satlistWidget_itemClicked(QListWidgetItem* item)
 {
-    TSat *sat;
-    int *rgb;
+    QListWidgetItem *item2;
+    TRGBConf *rc;
+    PList    *plist;
+    QString  str;
+    int      i;
 
-    sat = getSat(item->text());
-    if(!sat)
+    i = countSelected(ui->satlistWidget);
+    if(i <= 1)
+        ui->rgblv->clear();
+
+    selsat = getSat(satlist, item->text());
+    if(!selsat)
         return;
 
-    rgb = sat->sat_props->rgb_day();
-    ui->day_rgb_r->setValue(rgb[0]);
-    ui->day_rgb_g->setValue(rgb[1]);
-    ui->day_rgb_b->setValue(rgb[2]);
+    plist = selsat->sat_props->rgblist;
+    for(i=0; i<plist->Count; i++) {
+        rc = (TRGBConf *) plist->ItemAt(i);
+        str = rc->name();
+        if(finditem(ui->rgblv, str) < 0)
+            ui->rgblv->addItem(str);
+    }
 
-    rgb = sat->sat_props->rgb_night();
-    ui->night_rgb_r->setValue(rgb[0]);
-    ui->night_rgb_g->setValue(rgb[1]);
-    ui->night_rgb_b->setValue(rgb[2]);
+    // select the first one
+    rc = (TRGBConf *) plist->ItemAt(0);
+    if(rc) {
+        i = finditem(ui->rgblv, rc->name());
+        if(i >= 0) {
+            item2 = ui->rgblv->item(i);
+            item2->setSelected(true);
+            on_rgblv_itemClicked(item2);
+        }
+
+    }
+}
+//---------------------------------------------------------------------------
+//
+//                  RGB Settings
+//
+//---------------------------------------------------------------------------
+void SatPropDialog::on_rgblv_itemClicked(QListWidgetItem* item)
+{
+    if(!selsat)
+        return;
+
+    TRGBConf *rc = selsat->sat_props->get_rgb(item->text());
+    if(!rc)
+        return;
+
+    ui->rgbnameEd->setText(item->text());
+    int *rgb = rc->rgb_ch();
+    ui->rgb_r->setValue(rgb[0]);
+    ui->rgb_g->setValue(rgb[1]);
+    ui->rgb_b->setValue(rgb[2]);
 }
 
 //---------------------------------------------------------------------------
 void SatPropDialog::on_applyRGB_clicked()
 {
-    QListWidgetItem* item;
+    QListWidgetItem *item, *rgbitem;
+    TRGBConf *rc = NULL;
+    TSat *sat;
+    int i, j;
+
+    if(ui->rgbnameEd->text().isEmpty())
+        return;
+
+    // apply to all selected satellites the same selected rgb settings
+    for(i=0; i<ui->satlistWidget->count(); i++) {
+        item = ui->satlistWidget->item(i);
+        if(!item->isSelected())
+            continue;
+
+        sat = getSat(satlist, item->text());
+        if(!sat)
+            continue;
+
+        if(rc == NULL) {
+            // get the selected rgb setting and modify it
+            for(j=0; j<ui->rgblv->count(); j++) {
+                rgbitem = ui->rgblv->item(j);
+                if(rgbitem->isSelected()) {
+                    rc = sat->sat_props->get_rgb(rgbitem->text());
+                    if(rc)
+                        break;
+                }
+            }
+
+            if(rc == NULL)
+                return; // corrupt...
+
+            rgbitem->setText(ui->rgbnameEd->text());
+            rc->name(ui->rgbnameEd->text());
+        }
+
+        sat->sat_props->add_rgb(ui->rgbnameEd->text(),
+                                ui->rgb_r->value(),
+                                ui->rgb_g->value(),
+                                ui->rgb_b->value());
+    }
+}
+
+//---------------------------------------------------------------------------
+void SatPropDialog::on_addRGBBtn_clicked()
+{
+    QListWidgetItem *item;
+    TRGBConf *rc;
+    TSat *sat;
+    int i;
+
+    if(ui->rgbnameEd->text().isEmpty())
+        return;
+
+    // apply to all selected satellites the same new rgb settings
+    for(i=0; i<ui->satlistWidget->count(); i++) {
+        item = ui->satlistWidget->item(i);
+        if(!item->isSelected())
+            continue;
+
+        sat = getSat(satlist, item->text());
+        if(!sat)
+            continue;
+
+        rc = sat->sat_props->get_rgb(ui->rgbnameEd->text());
+        if(rc)
+            rc->rgb_ch(ui->rgb_r->value(),
+                       ui->rgb_g->value(),
+                       ui->rgb_b->value());
+        else
+            sat->sat_props->add_rgb(ui->rgbnameEd->text(),
+                                    ui->rgb_r->value(),
+                                    ui->rgb_g->value(),
+                                    ui->rgb_b->value());
+    }
+
+    if(finditem(ui->rgblv, ui->rgbnameEd->text()) < 0)
+        ui->rgblv->addItem(ui->rgbnameEd->text());
+
+    // select it
+    i = finditem(ui->rgblv, ui->rgbnameEd->text());
+    if(i >= 0) {
+        item = ui->rgblv->item(i);
+        item->setSelected(true);
+        on_rgblv_itemClicked(item);
+    }
+}
+
+//---------------------------------------------------------------------------
+void SatPropDialog::keyPressEvent(QKeyEvent *event)
+{
+    QListWidgetItem *item, *rgbitem;
+    TSat *sat;
+    int i, j;
+
+     if(event->key() != Qt::Key_Delete) {
+         QWidget::keyPressEvent(event);
+         return;
+     }
+
+     // get the selected rgb setting and delete it from all selected satellites
+     for(j=0; j<ui->rgblv->count(); j++) {
+         rgbitem = ui->rgblv->item(j);
+         if(!rgbitem->isSelected())
+             continue;
+
+         for(i=0; i<ui->satlistWidget->count(); i++) {
+             item = ui->satlistWidget->item(i);
+             if(!item->isSelected())
+                 continue;
+             sat = getSat(satlist, item->text());
+             if(sat)
+                 sat->sat_props->del_rgb(rgbitem->text());
+         }
+
+         ui->rgblv->removeItemWidget(rgbitem);
+         delete rgbitem;
+     }
+}
+
+//---------------------------------------------------------------------------
+void SatPropDialog::on_defaultrgbBtn_clicked()
+{
+    QListWidgetItem *item, *selitem = NULL;
     TSat *sat;
     int i;
 
@@ -102,15 +280,17 @@ void SatPropDialog::on_applyRGB_clicked()
         if(!item->isSelected())
             continue;
 
-        sat = getSat(item->text());
+        selitem = item;
+        sat = getSat(satlist, item->text());
         if(!sat)
             continue;
-        sat->sat_props->rgb_day(ui->day_rgb_r->value(),
-                                ui->day_rgb_g->value(),
-                                ui->day_rgb_b->value());
-        sat->sat_props->rgb_night(ui->night_rgb_r->value(),
-                                  ui->night_rgb_g->value(),
-                                  ui->night_rgb_b->value());
+
+        sat->sat_props->add_rgb_defaults();
     }
 
+    if(selitem)
+        on_satlistWidget_itemClicked(selitem);
 }
+
+//---------------------------------------------------------------------------
+

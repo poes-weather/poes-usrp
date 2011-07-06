@@ -140,6 +140,7 @@ void TSat::Zero(void)
   sat_flags   = 0;
 
   sat_scripts->zero();
+  sat_props->zero();
 }
 
 //---------------------------------------------------------------------------
@@ -1128,7 +1129,7 @@ bool TSat::SavePassinfo(void)
     reg.endGroup();
 
     sat_scripts->writeSettings(&reg);
-    sat_props->writeSettings(&reg);
+    // sat_props->writeSettings(&reg);
 
     return true;
 }
@@ -1175,7 +1176,7 @@ bool TSat::ReadPassinfo(QString hrptfile)
     CalcAll(rec_aostime);
 
     sat_scripts->readSettings(&reg);
-    sat_props->readSettings(&reg);
+    // sat_props->readSettings(&reg);
 
  return true;
 }

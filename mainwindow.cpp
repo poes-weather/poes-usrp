@@ -698,22 +698,22 @@ void MainWindow::readSatelliteSettings(void)
              break;
          }
 
-         sat->sat_scripts->readSettings(&reg);
-         sat->sat_props->readSettings(&reg);
-      reg.endGroup();
-
-
-      if(getSat(satList, name))
+      if(getSat(satList, name)) {
+          reg.endGroup();
           continue;
+      }
 
       if(sat->TLEKepCheck((char *)name.toStdString().c_str(),
                           (char *)line1.toStdString().c_str(),
                           (char *)line2.toStdString().c_str()))
       {
           sat->AssignObsInfo(qth);
+          sat->sat_scripts->readSettings(&reg);
+          sat->sat_props->readSettings(&reg);
           satList->Add(new TSat(sat));
       }
 
+      reg.endGroup();
       str.sprintf("Spacecraft_%d", i++);
    }
 

@@ -51,7 +51,8 @@ SOURCES += main.cpp \
     tools/cadusplitterdialog.cpp \
     rig/monstrum.cpp \
     satellite/property/satprop.cpp \
-    satellite/property/satpropdialog.cpp
+    satellite/property/satpropdialog.cpp \
+    satellite/property/rgbconf.cpp
 HEADERS += mainwindow.h \
     decoder/hrptblock.h \
     version.h \
@@ -106,7 +107,8 @@ HEADERS += mainwindow.h \
     tools/cadusplitterdialog.h \
     rig/monstrum.h \
     satellite/property/satprop.h \
-    satellite/property/satpropdialog.h
+    satellite/property/satpropdialog.h \
+    satellite/property/rgbconf.h
 DEFINES += _CRT_SECURE_NO_WARNINGS
 FORMS += mainwindow.ui \
     satellite/station/stationdialog.ui \

@@ -19,49 +19,35 @@
     Web: <http://www.poes-weather.com>
 */
 //---------------------------------------------------------------------------
-#ifndef SATPROPDIALOG_H
-#define SATPROPDIALOG_H
+#ifndef RGBCONF_H
+#define RGBCONF_H
 
-#include <QDialog>
-#include <QListWidgetItem>
+class QSettings;
+class QString;
 
-//---------------------------------------------------------------------------
-namespace Ui {
-    class SatPropDialog;
-}
-
-class QListWidget;
-class PList;
-class TSat;
-
-//---------------------------------------------------------------------------
-class SatPropDialog : public QDialog
+class TRGBConf
 {
-    Q_OBJECT
-
 public:
-    explicit SatPropDialog(PList *satList, QWidget *parent = 0);
-    ~SatPropDialog();
+    TRGBConf(void);
+    TRGBConf(const QString& id, int r_ch, int g_ch, int b_ch);
+    TRGBConf(TRGBConf& src);
+    TRGBConf& operator = (TRGBConf& src);
+    ~TRGBConf(void);
 
-protected:
-    void keyPressEvent(QKeyEvent *event);
+    QString name(void) const { return _name; }
+    void name(const QString& id)  { _name = id; }
 
-    int countSelected(QListWidget *lw);
-    int finditem(QListWidget *lw, const QString& str);
+    int  *rgb_ch(void) { return _rgb_ch; }
+    void rgb_ch(int r_ch, int g_ch, int b_ch);
 
-private slots:
-    void on_satlistWidget_itemClicked(QListWidgetItem* item);
-    void on_rgblv_itemClicked(QListWidgetItem* item);
-    void on_applyRGB_clicked();
-    void on_addRGBBtn_clicked();
+    void checkChannels(int max_ch);
 
-    void on_defaultrgbBtn_clicked();
+    void readSettings(QSettings *reg);
+    void writeSettings(QSettings *reg);
 
 private:
-    Ui::SatPropDialog *ui;
-
-    PList *satlist;
-    TSat  *selsat;
+    int _rgb_ch[3];
+    QString _name;
 };
 
-#endif // SATPROPDIALOG_H
+#endif // RGBCONF_H
