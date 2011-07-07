@@ -93,7 +93,7 @@ RigDialog::RigDialog(QWidget *parent) :
     m_ui->parkAzSp->setValue(rig->rotor->parkAz);
 
     // control
-#if 0
+#if 1
     rig->rotor->openPort();
 #endif
 
