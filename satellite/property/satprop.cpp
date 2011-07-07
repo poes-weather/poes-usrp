@@ -30,13 +30,7 @@
 //---------------------------------------------------------------------------
 TSatProp::TSatProp(void)
 {
-    // default RGB to NOAA
-    _rgb_day_ch[0] = 1; _rgb_night_ch[0] = 3;
-    _rgb_day_ch[1] = 2; _rgb_night_ch[1] = 4;
-    _rgb_day_ch[2] = 4; _rgb_night_ch[2] = 5;
-
     rgblist = new PList;
-
 }
 
 //---------------------------------------------------------------------------
@@ -120,36 +114,33 @@ void TSatProp::clear_rgb(void)
     }
 }
 
-
-
-
-
-
-
 //---------------------------------------------------------------------------
-void TSatProp::rgb_day(int r_ch, int g_ch, int b_ch)
+void TSatProp::add_defaults(int mode)
 {
-    // default to NOAA: 5 channels
-    _rgb_day_ch[0] = r_ch;
-    _rgb_day_ch[1] = g_ch;
-    _rgb_day_ch[2] = b_ch;
+    add_rgb_defaults(mode);
 }
 
 //---------------------------------------------------------------------------
-void TSatProp::rgb_night(int r_ch, int g_ch, int b_ch)
+void TSatProp::add_rgb_defaults(int mode)
 {
-    // default to NOAA: 5 channels
-    _rgb_night_ch[0] = r_ch;
-    _rgb_night_ch[1] = g_ch;
-    _rgb_night_ch[2] = b_ch;
+    if(mode & 1)
+        clear_rgb();
+
+    // add some NOAA defaults (applies also to Feng-Yun and Meteor M-N1 also)
+    add_rgb("RGB Daytime", 1, 2, 4);
+    add_rgb("RGB Nighttime", 3, 4, 5);
+    add_rgb("RGB Daytime cyan snow", 3, 2, 1);
 }
 
 //---------------------------------------------------------------------------
 void TSatProp::checkChannels(int max_ch)
 {
-    for(int i=0; i<3; i++) {
-        _rgb_day_ch[i] = _rgb_day_ch[i] < 1 ? 1:_rgb_day_ch[i] > max_ch ? max_ch:_rgb_day_ch[i];
-        _rgb_night_ch[i] = _rgb_night_ch[i] < 1 ? 1:_rgb_night_ch[i] > max_ch ? max_ch:_rgb_night_ch[i];
+    TRGBConf *rc;
+    int i;
+
+    for(i=0; i<rgblist->Count; i++) {
+        rc = (TRGBConf *) rgblist->ItemAt(i);
+        rc->checkChannels(max_ch);
     }
 }
 
@@ -184,15 +175,6 @@ void TSatProp::readSettings(QSettings *reg)
 
     reg->endGroup(); // RGB-Conf
     delete rc;
-}
-
-//---------------------------------------------------------------------------
-void TSatProp::add_rgb_defaults(void)
-{
-    // add some NOAA defaults (applies also to Feng-Yun and Meteor M-N1 also)
-    add_rgb("RGB Daytime", 1, 2, 4);
-    add_rgb("RGB Nighttime", 3, 4, 5);
-    add_rgb("RGB Daytime cyan snow", 3, 2, 1);
 }
 
 //---------------------------------------------------------------------------

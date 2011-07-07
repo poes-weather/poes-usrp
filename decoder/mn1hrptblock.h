@@ -41,8 +41,6 @@ public:
     int  getWidth(void);
     int  getHeight(void);
 
-    int  setImageType(int type);
-    int  setImageChannel(int channel);
     int  getNumChannels(void);
 
     bool readFrameScan(int frame_nr);

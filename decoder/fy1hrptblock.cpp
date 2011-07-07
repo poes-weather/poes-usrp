@@ -212,29 +212,6 @@ int TFY1HRPT::getWidth(void)
 }
 
 //---------------------------------------------------------------------------
-int TFY1HRPT::setImageType(int type)
-{
-   if((Block_ImageType) type < Gray_ImageType)
-      type = (int) Gray_ImageType;
-   else if((Block_ImageType) type > Max_ImageType)
-      type = (int) Max_ImageType;
-
- return type;
-}
-
-//---------------------------------------------------------------------------
-// zero based
-int TFY1HRPT::setImageChannel(int channel)
-{
-    if(channel < 0)
-        channel = 0;
-    else if(channel >= FY1_HRPT_NUM_CHANNELS)
-        channel = FY1_HRPT_NUM_CHANNELS - 1;
-
-  return channel;
-}
-
-//---------------------------------------------------------------------------
 int TFY1HRPT::getNumChannels(void)
 {
     return FY1_HRPT_NUM_CHANNELS;
@@ -326,32 +303,23 @@ bool TFY1HRPT::frameToImage(int frame_nr, QImage *image)
      return false;
 
   switch(block->getImageType()) {
-  case RGB_Day_ImageType:
-      ch_rgb = block->satprop->rgb_day();
+  case RGB_ImageType:
+      ch_rgb = block->rgbconf->rgb_ch();
       break;
-  case RGB_Night_ImageType:
-      ch_rgb = block->satprop->rgb_night();
-      break;
+
   default:
       break;
   }
 
   for(x=0; x<FY1_HRPT_SCAN_WIDTH; x++) {
       switch(block->getImageType()) {
-      case Gray_ImageType:
+      case Channel_ImageType:
           r = getPixel_8(block->getImageChannel(), x);
           g = r;
           b = r;
           break;
 
       case RGB_ImageType:
-          r = getPixel_8(0, x); // ch 1
-          g = getPixel_8(1, x); // ch 2
-          b = getPixel_8(3, x); // ch 4
-          break;
-
-      case RGB_Day_ImageType:
-      case RGB_Night_ImageType:
           r = getPixel_8(ch_rgb[0] - 1, x);
           g = getPixel_8(ch_rgb[1] - 1, x);
           b = getPixel_8(ch_rgb[2] - 1, x);

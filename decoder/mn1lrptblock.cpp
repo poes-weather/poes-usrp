@@ -199,29 +199,6 @@ int TMN1LRPT::getWidth(void)
 }
 
 //---------------------------------------------------------------------------
-int TMN1LRPT::setImageType(int type)
-{
-   if((Block_ImageType) type < Gray_ImageType)
-      type = (int) Gray_ImageType;
-   else if((Block_ImageType) type > RGB_ImageType)
-      type = (int) RGB_ImageType;
-
- return type;
-}
-
-//---------------------------------------------------------------------------
-// zero based
-int TMN1LRPT::setImageChannel(int channel)
-{
-    if(channel < 0)
-        channel = 0;
-    else if(channel >= MN1LRPT_NUM_CHANNELS)
-        channel = MN1LRPT_NUM_CHANNELS - 1;
-
-  return channel;
-}
-
-//---------------------------------------------------------------------------
 // frame_nr is zero based (0, 1, 2, ... frames - 1)
 bool TMN1LRPT::readFrameScanLine(int frame_nr)
 {

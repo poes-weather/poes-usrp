@@ -24,7 +24,9 @@
 
 #include "mainwindow.h"
 #include "block.h"
+#include "plist.h"
 
+#define F_NO_EVENTS 256
 //---------------------------------------------------------------------------
 ImageWidget::ImageWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -33,6 +35,8 @@ ImageWidget::ImageWidget(QWidget *parent) :
     m_ui->setupUi(this);
 
     mw = (MainWindow *)parent;
+
+    flags = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -88,29 +92,58 @@ bool ImageWidget::isNorthbound(void)
 }
 
 //---------------------------------------------------------------------------
+void ImageWidget::setProperties(bool northbound)
+{
+    TBlock *block = mw->getBlock();
+
+    flags |= F_NO_EVENTS;
+
+    m_ui->NorthboundCb->setChecked(northbound);
+    block->setNorthBound(isNorthbound());
+    m_ui->channelSpinBox->setMaximum(block->getNumChannels());
+    m_ui->channelSpinBox->setValue(1);
+    block->setImageChannel(1);
+
+    if(block->satprop->rgblist->Count == 0)
+        block->satprop->add_rgb_defaults();
+
+    m_ui->enhanceCb->clear();
+    m_ui->enhanceCb->addItems(block->getImageTypes());
+    m_ui->enhanceCb->setCurrentIndex(0);
+    block->setImageType(0);
+
+    block->checkSatProps();
+
+    flags &= ~F_NO_EVENTS;
+}
+
+//---------------------------------------------------------------------------
 int ImageWidget::getImageType(void)
 { 
     return m_ui->enhanceCb->currentIndex();
 }
 
 //---------------------------------------------------------------------------
-void ImageWidget::on_channelSpinBox_valueChanged(int )
+void ImageWidget::on_channelSpinBox_valueChanged(int value)
 {
- int ch;
- TBlock *b = mw->getBlock();
+    if(flags & F_NO_EVENTS)
+        return;
 
-    ch = b->getImageChannel();
-    b->setImageChannel(getChannel());
+    TBlock *b = mw->getBlock();
 
-    if(b->getImageType() == Gray_ImageType)
-       if(ch != b->getImageChannel())
-          mw->renderImage();
+    if(b->getImageType() == Channel_ImageType) {
+        b->setImageChannel(value);
+        mw->renderImage();
+    }
 }
 
 //---------------------------------------------------------------------------
 void ImageWidget::on_NorthboundCb_clicked()
 {
-  TBlock *b = mw->getBlock();
+    if(flags & F_NO_EVENTS)
+        return;
+
+    TBlock *b = mw->getBlock();
 
     b->setNorthBound(isNorthbound());
     mw->renderImage();
@@ -119,11 +152,12 @@ void ImageWidget::on_NorthboundCb_clicked()
 //---------------------------------------------------------------------------
 void ImageWidget::on_enhanceCb_currentIndexChanged(int index)
 {
-  TBlock *b = mw->getBlock();
+    if(flags & F_NO_EVENTS)
+        return;
 
-    index = index;
+    TBlock *b = mw->getBlock();
 
-    b->setImageType((Block_ImageType) index);
+    b->setImageType(index);
     mw->renderImage();
 }
 

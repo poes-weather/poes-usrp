@@ -56,8 +56,6 @@ class TAHRPT
     int  countFrames(void);
     int  getWidth(void);
 
-    int  setImageType(int type);
-    int  setImageChannel(int channel);
     int  getNumChannels(void);
 
     bool readFrameScanLine(int frame_nr);

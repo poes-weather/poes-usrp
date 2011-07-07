@@ -279,7 +279,6 @@ void MainWindow::on_actionOpen_triggered()
   }
 
   imageWidget->setFrames(block->getBlockTypeStr(index), block->getFrames());
-  imageWidget->setMaxChannels(block->getNumChannels());
 
   ui->actionSave_As->setEnabled(rc);
   ui->actionClose->setEnabled(rc);
@@ -292,7 +291,8 @@ void MainWindow::on_actionOpen_triggered()
 bool MainWindow::processData(const char *filename, int blockType)
 {
  QString str;
- bool rc;
+ TSat    *sat;
+ bool    rc;
 
   if(!block->setBlockType((Block_Type) blockType)) {
      str.sprintf("Unsupported type: %s %s",
@@ -303,22 +303,21 @@ bool MainWindow::processData(const char *filename, int blockType)
      return false;
   }
 
+  // read satellite passinfo file
+  block->satprop->zero();
+
   if(!(rc = opensat->ReadPassinfo(filename))) {
       str.sprintf("Warning: Couldn't read passinfo file for %s", filename);
       ui->statusBar->showMessage(str);
   }
   else {
-      *block->satprop = *opensat->sat_props;
-
-      TSat *sat = getSat(satList, opensat->name);
+      sat = getSat(satList, opensat->name);
       if(sat)
           *block->satprop = *sat->sat_props;
   }
 
-  block->setImageChannel(imageWidget->getChannel());
-  block->setImageType((Block_ImageType) imageWidget->getImageType());
-  block->setNorthBound(rc ? opensat->isNorthbound() : imageWidget->isNorthbound());
-  block->checkSatProps();
+  // TODO: if passinfo file is not present exec a dialog where user can select a satellite
+  imageWidget->setProperties(rc ? opensat->isNorthbound():imageWidget->isNorthbound());
 
   if(!block->open(filename)) {
      str.sprintf("No frames found in file %s", filename);
@@ -796,7 +795,8 @@ void MainWindow::on_actionProperties_triggered()
                 TSat *sat = getSat(satList, opensat->name);
                 if(sat) {
                     *block->satprop = *sat->sat_props;
-                    if(block->getImageType() > RGB_ImageType)
+                    imageWidget->setProperties(opensat->isNorthbound());
+                    if(block->getImageType() > Channel_ImageType)
                         renderImage();
                 }
             }

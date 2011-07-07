@@ -40,6 +40,7 @@ public:
     ImageWidget(QWidget *parent = 0);
     ~ImageWidget();
 
+    void  setProperties(bool northbound);
     int   getChannel(void);
     bool  isNorthbound(void);
     int   getImageType(void);
@@ -54,10 +55,12 @@ private:
     Ui::ImageWidget *m_ui;
     MainWindow *mw;
 
+    int flags;
+
 private slots:
     void on_enhanceCb_currentIndexChanged(int index);
     void on_NorthboundCb_clicked();
-    void on_channelSpinBox_valueChanged(int );
+    void on_channelSpinBox_valueChanged(int value);
 };
 
 #endif // IMAGEWIDGET_H

@@ -199,29 +199,6 @@ int TMN1HRPT::getHeight(void)
 }
 
 //---------------------------------------------------------------------------
-int TMN1HRPT::setImageType(int type)
-{
-   if((Block_ImageType) type < Gray_ImageType)
-      type = (int) Gray_ImageType;
-   else if((Block_ImageType) type > Max_ImageType)
-      type = (int) Max_ImageType;
-
- return type;
-}
-
-//---------------------------------------------------------------------------
-// zero based
-int TMN1HRPT::setImageChannel(int channel)
-{
-    if(channel < 0)
-        channel = 0;
-    else if(channel >= MN1_HRPT_NUM_CHANNELS)
-        channel = MN1_HRPT_NUM_CHANNELS - 1;
-
-  return channel;
-}
-
-//---------------------------------------------------------------------------
 int TMN1HRPT::getNumChannels(void)
 {
     return MN1_HRPT_NUM_CHANNELS;
@@ -356,16 +333,13 @@ bool TMN1HRPT::scanToImage(int scan_nr, QImage *image)
   ch = block->getImageChannel();
 
   switch(it) {
-  case RGB_Day_ImageType:
-      ch_rgb = block->satprop->rgb_day();
+  case RGB_ImageType:
+      ch_rgb = block->rgbconf->rgb_ch();
       break;
-  case RGB_Night_ImageType:
-      ch_rgb = block->satprop->rgb_night();
-      break;
+
   default:
       break;
   }
-
 
   // width / 4 = 385 samples needed to produce one scanline
   width = (MN1_HRPT_SCAN_WIDTH >> 2);
@@ -377,20 +351,13 @@ bool TMN1HRPT::scanToImage(int scan_nr, QImage *image)
 
      for(j=0; j<4; j++) {
          switch(it) {
-         case Gray_ImageType:
+         case Channel_ImageType:
              r = getPixel_8(ch, j);
              g = r;
              b = r;
          break;
 
          case RGB_ImageType:
-             r = getPixel_8(0, j); // ch 1
-             g = getPixel_8(1, j); // ch 2
-             b = getPixel_8(5, j); // ch 5
-         break;
-
-         case RGB_Day_ImageType:
-         case RGB_Night_ImageType:
              r = getPixel_8(ch_rgb[0] - 1, j);
              g = getPixel_8(ch_rgb[1] - 1, j);
              b = getPixel_8(ch_rgb[2] - 1, j);

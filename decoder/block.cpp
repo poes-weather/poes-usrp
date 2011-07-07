@@ -27,22 +27,17 @@
 #include "mn1hrptblock.h"
 #include "fy1hrptblock.h"
 #include "lritblock.h"
-
-
-#if 0
-static const quint8 CADU_SYNC[CADU_SYNC_SIZE] = {
-  0x1A, 0xCF, 0xFC, 0x1D,
-};
-#endif
+#include "plist.h"
 
 static const char *SUPPORTED_BLOCKS[NUM_SUPPORTED_BLOCKS] =
 {
    "NOAA HRPT",
-   "METEOR M-N1 LRPT",
-   "METEOR M-N1 HRPT",
    "FENGYUN 1 HRPT",
    "MetOp AHRPT",
+   "METEOR M-N1 HRPT",
+
    "NOAA LRPT",
+   "METEOR M-N1 LRPT",
    "GOES LRIT/HRIT",
    "JPEG LRIT/HRIT"
 };
@@ -57,7 +52,7 @@ TBlock::TBlock(void)
    firstFrameSyncPos = -1;
 
    blocktype = Undefined_BlockType;
-   imagetype = Gray_ImageType;
+   imagetype = Channel_ImageType;
    imageChannel = 0; // zero based
 
    cadu = new TCADU;
@@ -441,10 +436,19 @@ bool TBlock::uncompress(const char *filename)
 }
 
 //---------------------------------------------------------------------------
+// channel is 1 based
+// imageChannel is zero based
 void TBlock::setImageChannel(int channel)
 {
    if(!block)
       return;
+
+   int maxch = getNumChannels() - 1;
+   int ch = channel - 1;
+
+   imageChannel = ch < 0 ? 0:ch > maxch ? maxch:ch;
+
+#if 0
 
    switch(blocktype) {
       case HRPT_BlockType:
@@ -471,6 +475,8 @@ void TBlock::setImageChannel(int channel)
       default:
          return;
    }
+
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -489,11 +495,11 @@ int TBlock::getNumChannels(void)
        case AHRPT_BlockType:
           channels = ((TAHRPT *) block)->getNumChannels();
        break;
-#if 0
+
        case MN1HRPT_BlockType:
           channels = ((TMN1HRPT *) block)->getNumChannels();
        break;
-#endif
+
        case FY1HRPT_BlockType:
           channels = ((TFY1HRPT *) block)->getNumChannels();
        break;
@@ -512,11 +518,57 @@ void TBlock::checkSatProps(void)
 }
 
 //---------------------------------------------------------------------------
-void TBlock::setImageType(Block_ImageType type)
+QStringList TBlock::getImageTypes(void) const
+{
+    QStringList sl;
+    TRGBConf *rc;
+    int i;
+
+    sl.append("Channel");
+
+    for(i=0; i<satprop->rgblist->Count; i++) {
+        rc = (TRGBConf *) satprop->rgblist->ItemAt(i);
+        sl.append(rc->name());
+    }
+
+    return sl;
+}
+
+//---------------------------------------------------------------------------
+//void TBlock::setImageType(Block_ImageType type)
+// index is zero based 0...n
+void TBlock::setImageType(int index)
 {
    if(!block)
       return;
 
+   // index
+   // channel   = 0
+   // rgb       = 1...n
+   // ndvi      = n+1...m
+   // etc
+
+   Block_ImageType type;
+
+   rgbconf = NULL;
+
+   if(index < 1)
+       type = Channel_ImageType;
+   else if(index <= satprop->rgblist->Count) {
+       rgbconf = (TRGBConf *) satprop->rgblist->ItemAt(index - 1);
+       if(rgbconf)
+           type = RGB_ImageType;
+       else
+           type = Channel_ImageType;
+   }
+   else {
+       // TODO: NDVI support
+       type = Channel_ImageType;
+   }
+
+   imagetype = type;
+
+#if 0
    switch(blocktype) {
       case HRPT_BlockType:
          imagetype = (Block_ImageType) ((THRPT *) block)->setImageType((int) type);
@@ -534,14 +586,18 @@ void TBlock::setImageType(Block_ImageType type)
          imagetype = (Block_ImageType) ((TFY1HRPT *) block)->setImageType((int) type);
       break;
 
+#if 0
       case MN1LRPT_BlockType:
       case LRIT_JPEG_BlockType:
          imagetype = (Block_ImageType) ((TMN1LRPT *) block)->setImageType((int) type);
       break;
+#endif
 
       default:
          return;
    }
+#endif
+
 }
 
 //---------------------------------------------------------------------------

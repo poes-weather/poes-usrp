@@ -39,15 +39,11 @@ public:
 
     // RGB image settings
     TRGBConf *add_rgb(const QString& name, int r, int g, int b);
-    void add_rgb_defaults(void);
     void del_rgb(const QString& name);
     TRGBConf *get_rgb(QString name);
 
-    int  *rgb_day(void) { return _rgb_day_ch; }
-    void rgb_day(int r_ch, int g_ch, int b_ch);
-
-    int  *rgb_night(void) { return _rgb_night_ch; }
-    void rgb_night(int r_ch, int g_ch, int b_ch);
+    void add_defaults(int mode=0);
+    void add_rgb_defaults(int mode=0);
 
     void checkChannels(int max_ch);
 
@@ -60,8 +56,6 @@ public:
 protected:
     void clear_rgb(void);
 
-private:
-    int _rgb_day_ch[3], _rgb_night_ch[3];
 };
 
 #endif // SATPROP_H

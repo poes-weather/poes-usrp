@@ -53,10 +53,7 @@ class TFY1HRPT
     int  countFrames(void);
     int  getWidth(void);
 
-    int  setImageType(int type);
-    int  setImageChannel(int channel);
     int  getNumChannels(void);
-
 
     bool readFrameScanLine(int frame_nr);
     bool frameToImage(int frame_nr, QImage *image);

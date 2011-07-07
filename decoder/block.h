@@ -23,6 +23,7 @@
 #define BLOCK_H
 
 #include <QtGlobal>
+#include <QStringList>
 #include <stdio.h>
 
 #include "satprop.h"
@@ -40,11 +41,13 @@ typedef enum BlockType_t
 {
     Undefined_BlockType = -1,
     HRPT_BlockType = 0,
-    MN1LRPT_BlockType,
-    MN1HRPT_BlockType,
     FY1HRPT_BlockType,
     AHRPT_BlockType,
+    MN1HRPT_BlockType,
+
+    // semi supported
     LRPT_BlockType,
+    MN1LRPT_BlockType,
     LRIT_GOES_BlockType,   // uncompressed
     LRIT_JPEG_BlockType,   // JPEG compressed
 } Block_Type;
@@ -52,12 +55,9 @@ typedef enum BlockType_t
 
 typedef enum Block_ImageType_t
 {
-    Gray_ImageType = 0,
-    RGB_ImageType,
-    RGB_Day_ImageType,
-    RGB_Night_ImageType,
-
-    Max_ImageType, // must be last
+    Channel_ImageType = 0,      // grayscale per channel
+    RGB_ImageType,              // user defined RGB
+    RGB_NDVI_ImageType,         // user defined NDVI
 } Block_ImageType;
 
 
@@ -81,6 +81,7 @@ class QImage;
 class QString;
 class TCADU;
 class TSatProp;
+class TRGBConf;
 
 //---------------------------------------------------------------------------
 class TBlock
@@ -115,8 +116,10 @@ class TBlock
     void setFirstFrameSyncPos(long int count=-1) { firstFrameSyncPos = count; }
     int  getFirstFrameSyncPos(void) { return firstFrameSyncPos; }
     
-    void setImageType(Block_ImageType type);
+    //void setImageType(Block_ImageType type);
+    void setImageType(int index);
     Block_ImageType getImageType(void) { return imagetype; }
+    QStringList getImageTypes(void) const;
 
     void setNorthBound(bool on);
     bool isNorthBound(void) { return Modes&B_NORTHBOUND ? true:false; }
@@ -131,7 +134,9 @@ class TBlock
     bool toImage(QImage *image);
 
     int  Modes;
+
     TSatProp *satprop;
+    TRGBConf *rgbconf;
 
  protected:
     bool init(void);

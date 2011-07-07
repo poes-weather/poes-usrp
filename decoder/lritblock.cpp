@@ -541,7 +541,7 @@ bool TLRIT::readUncompressed(int frame_nr, QImage *image)
 
      for(x=0; x<columns; x++) {
         switch(block->getImageType()) {
-           case Gray_ImageType:
+           case Channel_ImageType:
               r = scanLine[x];
               g = r;
               b = r;

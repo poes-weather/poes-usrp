@@ -177,29 +177,6 @@ int TAHRPT::getWidth(void)
 }
 
 //---------------------------------------------------------------------------
-int TAHRPT::setImageType(int type)
-{
-   if((Block_ImageType) type < Gray_ImageType)
-      type = (int) Gray_ImageType;
-   else if((Block_ImageType) type > RGB_ImageType)
-      type = (int) RGB_ImageType;
-
- return type;
-}
-
-//---------------------------------------------------------------------------
-// zero based
-int TAHRPT::setImageChannel(int channel)
-{
-    if(channel < 0)
-        channel = 0;
-    else if(channel >= AHRPT_NUM_CHANNELS)
-        channel = AHRPT_NUM_CHANNELS - 1;
-
-  return channel;
-}
-
-//---------------------------------------------------------------------------
 int TAHRPT::getNumChannels(void)
 {
     return AHRPT_NUM_CHANNELS;
@@ -478,7 +455,7 @@ quint8 TAHRPT::getPixel_8(int channel, int sample)
 bool TAHRPT::frameToImage(int frame_nr, QImage *image)
 {
  uchar *imagescan, r, g, b;
- int x, y;
+ int x, y, *ch_rgb;
 
   if(!check(1) || image == NULL)
      return false;
@@ -495,19 +472,28 @@ bool TAHRPT::frameToImage(int frame_nr, QImage *image)
   if(imagescan == NULL)
      return false;
 
-  for(x=0; x<AHRPT_SCAN_WIDTH; x++) {
-     switch(block->getImageType()) {
-        case Gray_ImageType:
-           r = getPixel_8(block->getImageChannel(), x);
-           g = r;
-           b = r;
-        break;
+  switch(block->getImageType()) {
+  case RGB_ImageType:
+      ch_rgb = block->rgbconf->rgb_ch();
+      break;
 
-        case RGB_ImageType:
-           r = getPixel_8(1, x); // ch 2
-           g = getPixel_8(0, x); // ch 1
-           b = getPixel_8(3, x); // ch 4
-        break;
+  default:
+      break;
+  }
+
+  for(x=0; x<AHRPT_SCAN_WIDTH; x++) {
+      switch(block->getImageType()) {
+      case Channel_ImageType:
+          r = getPixel_8(block->getImageChannel(), x);
+          g = r;
+          b = r;
+          break;
+
+      case RGB_ImageType:
+          r = getPixel_8(ch_rgb[0] - 1, x);
+          g = getPixel_8(ch_rgb[1] - 1, x);
+          b = getPixel_8(ch_rgb[2] - 1, x);
+          break;
 
         default:
            return false;
