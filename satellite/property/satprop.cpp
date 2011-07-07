@@ -129,7 +129,7 @@ void TSatProp::add_rgb_defaults(int mode)
     // add some NOAA defaults (applies also to Feng-Yun and Meteor M-N1 also)
     add_rgb("RGB Daytime", 1, 2, 4);
     add_rgb("RGB Nighttime", 3, 4, 5);
-    add_rgb("RGB Daytime cyan snow", 3, 2, 1);
+    add_rgb("RGB Daytime cyan snow", 4, 2, 1);
 }
 
 //---------------------------------------------------------------------------

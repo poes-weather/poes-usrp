@@ -337,11 +337,12 @@ bool TMonstrum::readPosition(void)
     memcpy(&tmp, iobuff + 10, 5); tmp[6] = '\0';
     current_y = atof(tmp) / 100.0;
 
-    // TODO
-    // convert X-Y to Az-El
+    rotor->XYtoAzEl(current_x, current_y, &current_az, &current_el);
 
 #if defined MONSTER_DEBUG == 1
-    qDebug("Monstrum current X:%.2f Y:%.2f", current_x, current_y);
+    qDebug("Monstrum current X:%.2f Y:%.2f Az:%.3f El:%.3f",
+           current_x, current_y,
+           current_az, current_el);
 #endif
 
  return true;

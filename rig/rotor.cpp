@@ -431,9 +431,69 @@ void TRotor::AzEltoXY(double az, double el, double *x, double *y)
 //---------------------------------------------------------------------------
 void TRotor::XYtoAzEl(double X, double Y, double *az, double *el)
 {
-    // TODO
-    X = X;
-    Y = Y;
-    *az = *az;
-    *el = *el;
+    double AZIM, ELEV;
+    double tanX, tanX2, sinY2, sinY, A, B;
+
+    tanX = tan(X * DTR);
+    tanX2 = tanX * tanX;   //tanX2 = tanX^2 or tanX * tanX
+    sinY  = sin(Y * DTR);
+    sinY2 = sinY * sinY;
+
+    // B = cos Az
+    B = sqrt(-1.0 * ((tanX2 * sinY2 - tanX2) / (sinY2 + tanX2)));
+    // A = cos El
+    A  = sinY / sqrt(1.0 - B*B) ;
+
+    // cos Az = B and therefore
+    AZIM = acos(B) * RTD;
+    //cos El = A and therefore
+    ELEV = acos(A) * RTD;
+
+    // make sure we got some return value (even if it is wrong)
+    *az = AZIM;
+    *el = ELEV;
+
+    if(ELEV > 0) {
+        if(ELEV > 90)
+            ELEV = 180.0 - ELEV;
+        else {
+            ELEV = 0;
+            *el = ELEV;
+        }
+    }
+
+    // determine quadrant from X and Y angle, then determine correct azimuth and elevation
+    if(X < 0) {
+        if(Y < 0) // quadrant = 4;
+            *az = 360.0 - AZIM;
+        else if(Y > 0) // quadrant = 1;
+            *az = AZIM;
+        else { // quadrant = 14;
+            *az = 0;
+            *el = 90.0 - fabs(X);
+        }
+    }
+    else if(X > 0) {
+        if(Y < 0) // quadrant = 3;
+            *az = 180.0 + AZIM;
+        else if(Y > 0) // quadrant = 2;
+            *az = 180.0 - AZIM;
+        else {
+            // quadrant = 23;
+            *az = 180;
+            *el = 90.0 - fabs(X);
+        }
+    }
+    else { // X = 0, antenna move only in E-W direction and back
+        if(Y > 0) // quadrant = 12;
+            *az = AZIM;
+        else if(Y < 0) // quadrant = 34;
+            *az = AZIM;
+        else {
+            // quadrant= 0;
+            *az = 0;
+            *el = 90;
+        }
+    }
+
 }

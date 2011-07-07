@@ -307,14 +307,21 @@ bool MainWindow::processData(const char *filename, int blockType)
   block->satprop->zero();
 
   if(!(rc = opensat->ReadPassinfo(filename))) {
-      str.sprintf("Warning: Couldn't read passinfo file for %s", filename);
+      str.sprintf("Warning: Couldn't read/find passinfo file (.ini)!");
       ui->statusBar->showMessage(str);
   }
   else {
       sat = getSat(satList, opensat->name);
-      if(sat)
+      if(sat) {
+          if(sat->sat_props->rgblist->Count == 0)
+              sat->sat_props->add_defaults();
+
           *block->satprop = *sat->sat_props;
+      }
   }
+
+  if(block->satprop->rgblist->Count == 0)
+      block->satprop->add_defaults();
 
   // TODO: if passinfo file is not present exec a dialog where user can select a satellite
   imageWidget->setProperties(rc ? opensat->isNorthbound():imageWidget->isNorthbound());
@@ -787,18 +794,21 @@ void MainWindow::on_actionActive_satellites_triggered()
 //---------------------------------------------------------------------------
 void MainWindow::on_actionProperties_triggered()
 {
+    TSat *sat;
+
     SatPropDialog dlg(satList, this);
 
+    // TODO: backup settings incase cancel is toggled
     if(countSats()) {
         if(dlg.exec()) {
             if(blockImage) {
-                TSat *sat = getSat(satList, opensat->name);
+                sat = getSat(satList, opensat->name);
+
                 if(sat) {
                     *block->satprop = *sat->sat_props;
                     imageWidget->setProperties(opensat->isNorthbound());
-                    if(block->getImageType() > Channel_ImageType)
-                        renderImage();
                 }
+                renderImage();
             }
         }
     }

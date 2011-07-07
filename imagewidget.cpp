@@ -124,6 +124,12 @@ int ImageWidget::getImageType(void)
 }
 
 //---------------------------------------------------------------------------
+int ImageWidget::getImageIndex(void)
+{
+    return m_ui->enhanceCb->currentIndex();
+}
+
+//---------------------------------------------------------------------------
 void ImageWidget::on_channelSpinBox_valueChanged(int value)
 {
     if(flags & F_NO_EVENTS)

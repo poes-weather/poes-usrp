@@ -42,6 +42,7 @@ public:
 
     void  setProperties(bool northbound);
     int   getChannel(void);
+    int   getImageIndex(void);
     bool  isNorthbound(void);
     int   getImageType(void);
     void  setMaxChannels(int channels);

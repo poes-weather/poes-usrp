@@ -57,7 +57,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -217,93 +217,6 @@
           <string>NDVI</string>
          </attribute>
         </widget>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Help</string>
-       </attribute>
-       <widget class="QPlainTextEdit" name="plainTextEdit">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>471</width>
-          <height>291</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <family>Sans Serif</family>
-          <pointsize>8</pointsize>
-         </font>
-        </property>
-        <property name="lineWrapMode">
-         <enum>QPlainTextEdit::NoWrap</enum>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="plainText">
-         <string>====
-NOAA
-====
- Channel	Center wavelength (µm)      Spectral Range FWHM (µm)      Typical use
-  1                    0.63  (VIS)                  		0.58  -  0.68                    Daytime cloud and surface mapping
-  2                    0.862 (VNIR)                 	0.725 -  1.00	Land-water boundaries
-  3a                  1.61  (NIR)                  		1.58  -  1.64		(day selectable)   Snow and ice detection
-  3b                  3.74  (IR-window)            	3.55  -  3.93		(night selectable) Night cloud mapping, sea surface temperature
-  4                  10.80  (IR-window)           	10.30  - 11.30	Night cloud mapping, sea surface temperature
-  5                  12.00  (IR window)           	11.50  - 12.50	Sea surface temperature
-
-RGB Daytime (default)
-ch 1 = red, ch 2 = green, ch 4 = blue
-RGB Nighttime
-ch 3b = red, ch 4 = green, ch 5 = blue
-RGB Daytime Cyan snow 
-ch 3a = red, ch 2 = green, ch 1 = blue
-
-==========
-Feng-Yun 1C/D
-==========
-Band No         Spectral Range (µm)		Primary use of data
- 1               	    0.58 -   0.68 (VIS)       	  	Daytime clouds, ice and snow, vegetation
- 2                     0.84 -   0.89 (VNIR)       	Daytime clouds, vegetation, water
- 3                     3.55 -   3.93 (MWIR)      	Heat source, night cloud
- 4                   10.30 - 11.30 (TIR)          	SST, day/night clouds
- 5                   11.50 - 12.50 (TIR)          	SST, day/night clouds
- 6                     1.58 -   1.64 (SWIR)       	Soil humidity, provision of ice/snow cover distinguishing capability
- 7                     0.43 -   0.48 (VIS)         	Ocean color
- 8                     0.48 -   0.53 (VIS)         	Ocean color
- 9                     0.53 -   0.58 (VIS)         	Ocean color
-10                    0.90 -   0.965 (VNIR)    	Water vapor
-
-RGB Daytime (default)
-ch 1 = red, ch 2 = green, ch 4 = blue
-RGB Nighttime
-ch 3 = red, ch 4 = green, ch 5 = blue
-RGB Daytime Cyan snow 
-ch 3 = red, ch 2 = green, ch 1 = blue
-
-==========
-Meteor M N-1
-==========
-Band No      Spectral Range (µm)		Primary use of data
- 1	  0.5 -   0.7 (VIS)       		Daytime clouds, ice and snow, vegetation
- 2 	  0.7 -   1.1 (VNIR)      		Daytime clouds, vegetation, water
- 3	  1.6 -   1.8 (SWIR)      		Soil humidity, provision of ice/snow cover distinguishing capability
- 4	  3.5 -   4.1 (MWIR)      		Heat source, night cloud
- 5	10.5 - 11.5 (TIR)       		SST, day/night clouds
- 6	11.5 - 12.5 (TIR)       		SST, day/night clouds
-
-RGB Daytime (default)
-ch 1 = red, ch 2 = green, ch 5 = blue
-RGB Nighttime
-ch 4 = red, ch 5 = green, ch 6 = blue
-RGB Daytime Cyan snow 
-ch 3 = red, ch 2 = green, ch 1 = blue
-</string>
-        </property>
        </widget>
       </widget>
      </widget>
