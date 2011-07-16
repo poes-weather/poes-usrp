@@ -493,7 +493,7 @@ QStringList TBlock::getImageTypes(void) const
     TNDVI *vi;
     int i;
 
-    sl.append("Band Nr");
+    sl.append("Band Number");
 
     for(i=0; i<satprop->rgblist->Count; i++) {
         rc = (TRGBConf *) satprop->rgblist->ItemAt(i);
