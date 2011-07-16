@@ -95,6 +95,7 @@ bool ImageWidget::isNorthbound(void)
 void ImageWidget::setProperties(bool northbound)
 {
     TBlock *block = mw->getBlock();
+    int i;
 
     flags |= F_NO_EVENTS;
 
@@ -107,11 +108,16 @@ void ImageWidget::setProperties(bool northbound)
     if(block->satprop->rgblist->Count == 0)
         block->satprop->add_rgb_defaults();
 
+    i = m_ui->enhanceCb->currentIndex();
+
     m_ui->enhanceCb->clear();
     m_ui->enhanceCb->addItems(block->getImageTypes());
-    m_ui->enhanceCb->setCurrentIndex(0);
-    block->setImageType(0);
 
+    if(i < 0 || i >= m_ui->enhanceCb->count())
+        i = 0;
+
+    m_ui->enhanceCb->setCurrentIndex(i);
+    block->setImageType(i);
     block->checkSatProps();
 
     flags &= ~F_NO_EVENTS;

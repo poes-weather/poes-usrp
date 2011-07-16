@@ -57,7 +57,7 @@ typedef enum Block_ImageType_t
 {
     Channel_ImageType = 0,      // grayscale per channel
     RGB_ImageType,              // user defined RGB
-    RGB_NDVI_ImageType,         // user defined NDVI
+    NDVI_ImageType,             // user defined NDVI
 } Block_ImageType;
 
 
@@ -82,6 +82,7 @@ class QString;
 class TCADU;
 class TSatProp;
 class TRGBConf;
+class TNDVI;
 
 //---------------------------------------------------------------------------
 class TBlock
@@ -137,6 +138,7 @@ class TBlock
 
     TSatProp *satprop;
     TRGBConf *rgbconf;
+    TNDVI    *ndvi;
 
  protected:
     bool init(void);

@@ -29,7 +29,7 @@
 TRGBConf::TRGBConf(void)
 {
     // default RGB to NOAA daytime
-    _name = "NOAA Daytime RGB test";
+    _name = "xx NOAA Daytime RGB xx";
     _rgb_ch[0] = 1;
     _rgb_ch[1] = 2;
     _rgb_ch[2] = 4;
@@ -80,7 +80,7 @@ void TRGBConf::rgb_ch(int r_ch, int g_ch, int b_ch)
 }
 
 //---------------------------------------------------------------------------
-void TRGBConf::checkChannels(int max_ch)
+void TRGBConf::check(int max_ch)
 {
     for(int i=0; i<3; i++) {
         _rgb_ch[i] = _rgb_ch[i] < 1 ? 1:_rgb_ch[i] > max_ch ? max_ch:_rgb_ch[i];

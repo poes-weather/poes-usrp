@@ -23,8 +23,14 @@
 #define SATPROP_H
 
 #include "rgbconf.h"
+#include "ndvi.h"
 
 //---------------------------------------------------------------------------
+// decoder bitmap
+#define DF_DERANDOMIZE  1
+#define DF_RSDECODE     2
+
+
 class QSettings;
 class PList;
 
@@ -38,23 +44,46 @@ public:
     void zero(void);
 
     // RGB image settings
+    TRGBConf *get_rgb(QString name, int *index=NULL);
+    void     add_rgb(TRGBConf *rgb);
     TRGBConf *add_rgb(const QString& name, int r, int g, int b);
-    void del_rgb(const QString& name);
-    TRGBConf *get_rgb(QString name);
+    void     del_rgb(const QString& name);
+    void     add_rgb_defaults(int mode=0);
 
+    // NDVI settings
+    TNDVI *get_ndvi(const QString name);
+    void  add_ndvi(TNDVI *ndvi);
+    void  del_ndvi(const QString& name);
+    void  add_ndvi_defaults(int mode=0);        
+
+    // Decoder options
+    unsigned int decoderFlags(void) { return _decoderFlags; }
+
+    void derandomize(bool yes);
+    bool derandomize(void);
+
+    void rs_decode(bool yes);
+    bool rs_decode(void);
+
+    // general functions
+    void check(int max_ch);
     void add_defaults(int mode=0);
-    void add_rgb_defaults(int mode=0);
-
-    void checkChannels(int max_ch);
-
 
     void readSettings(QSettings *reg);
     void writeSettings(QSettings *reg);
 
     PList *rgblist;
+    PList *ndvilist;
 
 protected:
     void clear_rgb(void);
+    void clear_ndvi(void);
+
+    void flagState(unsigned int *flag, unsigned int bitmap, bool on);
+    bool flagState(unsigned int *flag, unsigned int bitmap);
+
+private:
+    unsigned int _decoderFlags;
 
 };
 

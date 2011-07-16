@@ -181,11 +181,9 @@ bool TBlock::setBlockType(Block_Type type)
 
        case AHRPT_BlockType:
        {
-           // TODO
-#if 1
-           cadu->derandomize(true);
-           cadu->reed_solomon(false);
-#endif
+           cadu->derandomize(satprop->derandomize());
+           cadu->reed_solomon(satprop->rs_decode());
+
            block = (TAHRPT *) new TAHRPT(this);
 
            break;
@@ -447,36 +445,6 @@ void TBlock::setImageChannel(int channel)
    int ch = channel - 1;
 
    imageChannel = ch < 0 ? 0:ch > maxch ? maxch:ch;
-
-#if 0
-
-   switch(blocktype) {
-      case HRPT_BlockType:
-         imageChannel = ((THRPT *) block)->setImageChannel(channel);
-      break;
-
-      case AHRPT_BlockType:
-         imageChannel = ((TAHRPT *) block)->setImageChannel(channel);
-      break;
-
-      case MN1HRPT_BlockType:
-         imageChannel = ((TMN1HRPT *) block)->setImageChannel(channel);
-      break;
-
-      case FY1HRPT_BlockType:
-         imageChannel = ((TFY1HRPT *) block)->setImageChannel(channel);
-      break;
-
-
-      case MN1LRPT_BlockType:
-         imageChannel = ((TMN1LRPT *) block)->setImageChannel(channel);
-      break;
-
-      default:
-         return;
-   }
-
-#endif
 }
 
 //---------------------------------------------------------------------------
@@ -514,7 +482,7 @@ int TBlock::getNumChannels(void)
 //---------------------------------------------------------------------------
 void TBlock::checkSatProps(void)
 {
-    satprop->checkChannels(getNumChannels());
+    satprop->check(getNumChannels());
 }
 
 //---------------------------------------------------------------------------
@@ -522,13 +490,19 @@ QStringList TBlock::getImageTypes(void) const
 {
     QStringList sl;
     TRGBConf *rc;
+    TNDVI *vi;
     int i;
 
-    sl.append("Channel");
+    sl.append("Band Nr");
 
     for(i=0; i<satprop->rgblist->Count; i++) {
         rc = (TRGBConf *) satprop->rgblist->ItemAt(i);
         sl.append(rc->name());
+    }
+
+    for(i=0; i<satprop->ndvilist->Count; i++) {
+        vi = (TNDVI *) satprop->ndvilist->ItemAt(i);
+        sl.append(vi->name());
     }
 
     return sl;
@@ -544,60 +518,34 @@ void TBlock::setImageType(int index)
 
    // index
    // channel   = 0
-   // rgb       = 1...n
-   // ndvi      = n+1...m
+   // rgb       = 1...m
+   // ndvi      = m+1...n
    // etc
 
-   Block_ImageType type;
+   Block_ImageType type = Channel_ImageType;
 
    rgbconf = NULL;
+   ndvi = NULL;
 
-   if(index < 1)
-       type = Channel_ImageType;
-   else if(index <= satprop->rgblist->Count) {
-       rgbconf = (TRGBConf *) satprop->rgblist->ItemAt(index - 1);
-       if(rgbconf)
-           type = RGB_ImageType;
-       else
-           type = Channel_ImageType;
-   }
-   else {
-       // TODO: NDVI support
-       type = Channel_ImageType;
+   if(index > 0) {
+       // RGB image
+       if(index <= satprop->rgblist->Count) {
+           rgbconf = (TRGBConf *) satprop->rgblist->ItemAt(index - 1);
+           if(rgbconf)
+               type = RGB_ImageType;
+       }
+       else {
+           // NDVI image
+           ndvi = (TNDVI *) satprop->ndvilist->ItemAt(index - satprop->rgblist->Count - 1);
+           if(ndvi) {
+               type = NDVI_ImageType;
+               rgbconf = satprop->get_rgb(ndvi->rgbName());
+               setImageChannel(ndvi->nir_ch());
+           }
+       }
    }
 
    imagetype = type;
-
-#if 0
-   switch(blocktype) {
-      case HRPT_BlockType:
-         imagetype = (Block_ImageType) ((THRPT *) block)->setImageType((int) type);
-      break;
-
-      case AHRPT_BlockType:
-         imagetype = (Block_ImageType) ((TAHRPT *) block)->setImageType((int) type);
-      break;
-
-      case MN1HRPT_BlockType:
-         imagetype = (Block_ImageType) ((TMN1HRPT *) block)->setImageType((int) type);
-      break;
-
-      case FY1HRPT_BlockType:
-         imagetype = (Block_ImageType) ((TFY1HRPT *) block)->setImageType((int) type);
-      break;
-
-#if 0
-      case MN1LRPT_BlockType:
-      case LRIT_JPEG_BlockType:
-         imagetype = (Block_ImageType) ((TMN1LRPT *) block)->setImageType((int) type);
-      break;
-#endif
-
-      default:
-         return;
-   }
-#endif
-
 }
 
 //---------------------------------------------------------------------------

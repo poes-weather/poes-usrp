@@ -279,57 +279,99 @@ quint8 THRPT::getPixel_8(int channel, int sample)
 // frame_nr is zero based
 bool THRPT::frameToImage(int frame_nr, QImage *image)
 {
- uchar *imagescan, r, g, b;
- int x, y, *ch_rgb;
+    Block_ImageType it;
+    uchar *imagescan, r, g, b;
+    quint16 r2, g2, b2;
+    double vi;
+    int x, y, *ch_rgb;
 
-  if(!check(1) || image == NULL)
-     return false;
+    if(!check(1) || image == NULL)
+       return false;
 
-  if(!readFrameScanLine(frame_nr))
-     return false;
+    if(!readFrameScanLine(frame_nr))
+       return false;
 
-  if(block->isNorthBound())
-     y = image->height() - frame_nr - 1;
-  else
-     y = frame_nr;
+    if(block->isNorthBound())
+       y = image->height() - frame_nr - 1;
+    else
+       y = frame_nr;
 
-  imagescan = (uchar *) image->scanLine(y);
-  if(imagescan == NULL)
-     return false;
+    imagescan = (uchar *) image->scanLine(y);
+    if(imagescan == NULL)
+       return false;
 
-  switch(block->getImageType()) {
-  case RGB_ImageType:
-      ch_rgb = block->rgbconf->rgb_ch();
-      break;
+    it = block->getImageType();
+    switch(it) {
+    case RGB_ImageType:
+        ch_rgb = block->rgbconf->rgb_ch();
+        break;
 
-  default:
-      break;
-  }
+    case NDVI_ImageType:
+    {
+        if(block->rgbconf) {
+            ch_rgb = block->rgbconf->rgb_ch();
+            it = RGB_ImageType;
+        }
+        else
+            it = Channel_ImageType;
+    }
+        break;
 
-  for(x=0; x<HRPT_SCAN_WIDTH; x++) {
-      switch(block->getImageType()) {
-      case Channel_ImageType:
-          r = getPixel_8(block->getImageChannel(), x);
-          g = r;
-          b = r;
-          break;
+    default:
+        it = Channel_ImageType;
+    }
 
-      case RGB_ImageType:
-          r = getPixel_8(ch_rgb[0] - 1, x);
-          g = getPixel_8(ch_rgb[1] - 1, x);
-          b = getPixel_8(ch_rgb[2] - 1, x);
-          break;
+    for(x=0; x<HRPT_SCAN_WIDTH; x++) {
+        switch(it) {
+        case Channel_ImageType:
+            r = getPixel_8(block->getImageChannel(), x);
+            g = r;
+            b = r;
+            break;
 
-      default:
-          return false;
-     }
+        case RGB_ImageType:
+            r = getPixel_8(ch_rgb[0] - 1, x);
+            g = getPixel_8(ch_rgb[1] - 1, x);
+            b = getPixel_8(ch_rgb[2] - 1, x);
+            break;
 
-     *imagescan++ = r;
-     *imagescan++ = g;
-     *imagescan++ = b;
-  }
+        default:
+            return false;
+        }
 
- return true;
+        if(block->getImageType() == NDVI_ImageType) {
+            // use all 10 bits
+            r2 = getPixel_16(block->ndvi->nir_ch() - 1, x);
+            b2 = getPixel_16(block->ndvi->vis_ch() - 1, x);
+            vi = block->ndvi->ndvi(r2, b2);
+
+            if(block->ndvi->isValid(vi)) {
+                g2 = block->ndvi->toColor_16(vi);
+
+                switch(it) {
+                case Channel_ImageType:
+                    g = SCALE16TO8(g2);
+                    break;
+
+                case RGB_ImageType:
+                    r = SCALE16TO8(r2);
+                    g = SCALE16TO8(g2);
+                    b = SCALE16TO8(b2);
+                    break;
+
+                default:
+                    return false;
+                }
+
+            }
+        }
+
+        *imagescan++ = r;
+        *imagescan++ = g;
+        *imagescan++ = b;
+    }
+
+    return true;
 }
 
 //---------------------------------------------------------------------------

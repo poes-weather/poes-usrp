@@ -1,0 +1,90 @@
+    POES-USRP, a software for recording and decoding POES high resolution weather satellite images.
+    Copyright (C) 2009-2011 Free Software Foundation, Inc.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Email: <postmaster@poes-weather.com>
+    Web: <http://www.poes-weather.com>
+****************************************************************************
+
+What is NDVI?
+
+The Normalized Difference Vegetation Index (NDVI) has been in use for many years to measure and monitor plant growth (vigor), 
+vegetation cover, and biomass production from multispectral satellite data. The NDVI image maps shown here are prepared from 
+1-km AVHRR spectral data in the visible (Channel 1; 0.58-0.68 micrometers) and near infrared (Channel 2; 0.725-1.10 micrometers) 
+regions of the electromagnetic spectrum. NDVI is calculated as follows:
+
+    NDVI = (Channel 2 - Channel 1) / (Channel 2 + Channel 1)
+
+The principle behind NDVI is that Channel 1 is in the red-light region of the electromagnetic spectrum where chlorophyll causes 
+considerable absorption of incoming sunlight, whereas Channel 2 is in the near-infrared region of the spectrum where a plant's 
+spongy mesophyll leaf structure creates considerable reflectance (Tucker 1979, Jackson et al.1983, Tucker et al. 1991). 
+As a result, vigorously growing healthy vegetation has low red-light reflectance and high near-infrared reflectance, and hence, 
+high NDVI values. This relatively simply algorithm produces output values in the range of -1.0 to 1.0. Increasing positive NDVI 
+values, shown in increasing shades of green on the images, indicate increasing amounts of green vegetation. NDVI values near zero
+and decreasing negative values indicate non-vegetated features such as barren surfaces (rock and soil) and water, snow, ice, 
+and clouds.
+
+* Source http://ivm.cr.usgs.gov/whatndvi.php
+
+=============
+NOAA AVHRR
+=============
+ Band No         Center wavelength (µm)      Spectral Range FWHM (µm)            Typical use
+  1                0.63  (VIS)                  0.58  -  0.68                    Daytime cloud and surface mapping
+  2                0.862 (VNIR)                 0.725 -  1.00                    Land-water boundaries
+  3a               1.61  (NIR)                  1.58  -  1.64 (day selectable)   Snow and ice detection
+=============
+Feng-Yun 1C/D
+=============
+Band No         Spectral Range (µm)     Primary use of data
+ 1               0.58 - 0.68 (VIS)       Daytime clouds, ice and snow, vegetation
+ 2               0.84 - 0.89 (VNIR)      Daytime clouds, vegetation, water
+ 6               1.58 - 1.64 (SWIR)      Soil humidity, provision of ice/snow cover distinguishing capability
+ 7               0.43 - 0.48 (VIS)       Ocean color
+ 8               0.48 - 0.53 (VIS)       Ocean color
+ 9               0.53 - 0.58 (VIS)       Ocean color
+10               0.90 - 0.965 (VNIR)     Water vapor
+=============
+Meteor M N-1
+=============
+Band No         Spectral Range (µm)     Primary use of data
+ 1		  0.5 -  0.7 (VIS)       Daytime clouds, ice and snow, vegetation
+ 2		  0.7 -  1.1 (VNIR)      Daytime clouds, vegetation, water
+ 3		  1.6 -  1.8 (SWIR)      Soil humidity, provision of ice/snow cover distinguishing capability
+ 4		  3.5 -  4.1 (MWIR)      Heat source, night cloud
+
+Sample NDVI min and max values. 
+* Source http://mercury.ornl.gov/metadata/ornldaac/daac_citations/2007/wilson_myers.pdf
+
+TYPE (US Town)		US State	NDVI	Std	Min	Max
+Deciduous (CH) 		TN 		0.666	0.0132	0.653	0.679
+Deciduous (WB) 		TN 		0.734	0.0132	0.721	0.747
+Deciduous (MO) 		MO 		0.669	0.014	0.655	0.683
+Pine forest (BH) 	SD 		0.512	0.0147	0.497	0.527
+Grassland (CV) 		WV 		0.668	0.009	0.659	0.677
+Grassland (FP) 		MT 		0.424	0.0106	0.413	0.435
+Grassland (GC) 		MS 		0.465	0.0158	0.449	0.481
+Grassland (SF) 		SD 		0.612	0.0066	0.605	0.619
+Desert grass (AG) 	AZ 		0.381	0.0091	0.372	0.390
+Cropland (BP) 		IL 		0.568	0.0313	0.537	0.599
+Cropland (BV) 		IL 		0.607	0.0069	0.600	0.614
+					
+Average NDVI					
+Deciduous		TN,MO		0.690	0.0135	0.676	0.703
+Pine forest (BH) 	SD 		0.512	0.0147	0.497	0.527
+Grassland		WV,MT,MS	0.542	0.0105	0.532	0.553
+Desert grass (AG) 	AZ 		0.381	0.0091	0.372	0.390
+Cropland		IL 		0.588	0.0191	0.568	0.607
+

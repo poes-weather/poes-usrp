@@ -31,8 +31,11 @@ namespace Ui {
 }
 
 class QListWidget;
+class QComboBox;
 class PList;
 class TSat;
+class TRGBConf;
+class TNDVI;
 
 //---------------------------------------------------------------------------
 class SatPropDialog : public QDialog
@@ -44,18 +47,34 @@ public:
     ~SatPropDialog();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
-
     int countSelected(QListWidget *lw);
     int finditem(QListWidget *lw, const QString& str);
+    int finditem(QComboBox *cb, const QString& str);
+
+    TRGBConf *getRGBConf(const QString& name);
+    TNDVI    *getNDVI(const QString& name);
+
+    void addRGB(const QString& name, const QString& oldname = "");
+    void addNDVI(const QString& name, const QString& oldname = "");
+
 
 private slots:
     void on_satlistWidget_itemClicked(QListWidgetItem* item);
-    void on_rgblv_itemClicked(QListWidgetItem* item);
+
+    void on_rgbCb_currentIndexChanged(int index);
     void on_applyRGB_clicked();
     void on_addRGBBtn_clicked();
-
     void on_defaultrgbBtn_clicked();
+
+    void on_ndviCb_currentIndexChanged(int index);
+    void on_addndvBtn_clicked();
+    void on_delndviBtn_clicked();
+    void on_applyndviBtn_clicked();
+
+
+    void on_delrgbBtn_clicked();
+
+    void on_applyDecoderBtn_clicked();
 
 private:
     Ui::SatPropDialog *ui;

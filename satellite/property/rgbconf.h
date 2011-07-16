@@ -41,7 +41,7 @@ public:
     int  *rgb_ch(void) { return _rgb_ch; }
     void rgb_ch(int r_ch, int g_ch, int b_ch);
 
-    void checkChannels(int max_ch);
+    void check(int max_ch);
 
     void readSettings(QSettings *reg);
     void writeSettings(QSettings *reg);

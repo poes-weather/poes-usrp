@@ -1,6 +1,6 @@
 /*
     HRPT-Decoder, a software for processing NOAA-POES high resolution weather satellite images.
-    Copyright (C) 2009 Free Software Foundation, Inc.
+    Copyright (C) 2009, 2010, 2011 Free Software Foundation, Inc.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -309,21 +309,21 @@ bool MainWindow::processData(const char *filename, int blockType)
   if(!(rc = opensat->ReadPassinfo(filename))) {
       str.sprintf("Warning: Couldn't read/find passinfo file (.ini)!");
       ui->statusBar->showMessage(str);
+
+      // TODO: if passinfo file is not present exec a dialog where user can select a satellite
   }
   else {
       sat = getSat(satList, opensat->name);
-      if(sat) {
-          if(sat->sat_props->rgblist->Count == 0)
-              sat->sat_props->add_defaults();
 
-          *block->satprop = *sat->sat_props;
+      if(sat == NULL) {
+          sat = new TSat(opensat);
+          sat->sat_props->add_defaults(1);
+          satList->Add(sat);
       }
+
+      *block->satprop = *sat->sat_props;
   }
 
-  if(block->satprop->rgblist->Count == 0)
-      block->satprop->add_defaults();
-
-  // TODO: if passinfo file is not present exec a dialog where user can select a satellite
   imageWidget->setProperties(rc ? opensat->isNorthbound():imageWidget->isNorthbound());
 
   if(!block->open(filename)) {
@@ -660,6 +660,13 @@ void MainWindow::writeSatelliteSettings(void)
        sat = (TSat *) satList->ItemAt(i);
        str.sprintf("Spacecraft_%d", i+1);
 
+#if 0
+          TNDVI *vi;
+          for(int ii=0; ii<sat->sat_props->ndvilist->Count; ii++) {
+              vi = (TNDVI *) sat->sat_props->ndvilist->ItemAt(ii);
+          }
+#endif
+
        reg.beginGroup(str);
           reg.setValue("Name",  sat->name);
           reg.setValue("TLE_1", sat->line1);
@@ -689,10 +696,10 @@ void MainWindow::readSatelliteSettings(void)
    QSettings reg(ini, QSettings::IniFormat);
    sat = new TSat;
 
-   i = 2;
-   str = "Spacecraft_1";
+   i = 1;
    while(true) {
       sat->Zero();
+      str.sprintf("Spacecraft_%d", i++);
 
       reg.beginGroup(str);
          name  = reg.value("Name",  "").toString();
@@ -717,10 +724,17 @@ void MainWindow::readSatelliteSettings(void)
           sat->sat_scripts->readSettings(&reg);
           sat->sat_props->readSettings(&reg);
           satList->Add(new TSat(sat));
+
+#if 0
+          TSat *sat2 = (TSat *) satList->Last();
+          TNDVI *vi;
+          for(int ii=0; ii<sat2->sat_props->ndvilist->Count; ii++) {
+              vi = (TNDVI *) sat2->sat_props->ndvilist->ItemAt(ii);
+          }
+#endif
       }
 
-      reg.endGroup();
-      str.sprintf("Spacecraft_%d", i++);
+      reg.endGroup();      
    }
 
  delete sat;
