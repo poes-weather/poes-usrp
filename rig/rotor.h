@@ -30,6 +30,7 @@
 #define R_ROTOR_ENABLE            16       // rotor is enabled
 #define R_ROTOR_CCW               32       // direction is counter clock wise
 #define R_ROTOR_PARK              64       // parking is enabled
+#define R_ROTOR_WOBBLE           128       // wobble antenna in circles
 //---------------------------------------------------------------------------
 
 
@@ -120,6 +121,11 @@ public:
     void   setAzimuth(double az);
     double getElevation(void);
     void   setElevation(double el);
+
+    double wobble_radius;
+    void wobbleEnable(bool enable);
+    bool wobbleEnable(void) { return ((flags & R_ROTOR_WOBBLE) ? true:false); }
+    void wobble(void);
 
     bool readPosition(void);
     unsigned long getRotationTime(double toAz, double toEl);

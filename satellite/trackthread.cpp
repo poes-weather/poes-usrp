@@ -433,7 +433,6 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
     if(rotor_flags_ptr) {
         *rotor_flags_ptr &= ~R_ROTOR_CCW;
 
-#if 1
         if(rig->rotor->el_max > 90) {
             // the dish can be turned upside down
             sat->daynum = rig->passthresholds() ? sat->rec_lostime:sat->lostime;
@@ -441,6 +440,11 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
             los_az = sat->sat_azi;
 
             // check if it crosses the pole
+#if 1
+            if(fabs(aos_az - los_az) > 185)
+                *rotor_flags_ptr |= R_ROTOR_CCW;
+
+#else
             if(sat->isNorthbound()) {
                 if((aos_az < 180 && (aos_az - los_az) < 0) ||
                    (aos_az > 180 && (aos_az - los_az) > 0))
@@ -451,23 +455,9 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
                    (aos_az < 90 && (aos_az - los_az) < 0))
                     *rotor_flags_ptr |= R_ROTOR_CCW;
             }
-        }
-
-#else
-        sat->daynum = rig->passthresholds() ? sat->rec_lostime:sat->lostime;
-        sat->Calc();
-        los_az = sat->sat_azi;
-
-        // check if it crosses the pole
-        if(sat->isNorthbound()) {
-            if(aos_az < 180 && los_az > 270)                
-                *rotor_flags_ptr |= R_ROTOR_CCW;
-        }
-        else {
-            if(aos_az > 180 && los_az < 90)
-                *rotor_flags_ptr |= R_ROTOR_CCW;
-        }
 #endif
+        }
+
     }
 
     rig->rotor->moveTo(aos_az, sat_ele < 0 ? 0:sat_ele);

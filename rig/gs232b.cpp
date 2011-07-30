@@ -281,7 +281,7 @@ bool TGS232B::moveTo(double az, double el)
         if(el < 0)
             el = 0;
 
-        qDebug("Move to *CCW* Az: %.2f El: %.2f", az, el);
+        qDebug("GS232 Move to CCW Az: %.2f El: %.2f", az, el);
     }
 
     i_az = ClipValue(rint(az), 360, 0);

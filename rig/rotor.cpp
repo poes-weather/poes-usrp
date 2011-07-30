@@ -55,6 +55,8 @@ TRotor::TRotor(TRig *_rig)
     az_max = 360; az_min = 0;
     el_max = 90;  el_min = 0;
 
+    wobble_radius = 1;
+
     commtype = Comm_Default;
     flags = 0;
 }
@@ -389,6 +391,40 @@ void TRotor::setElevation(double el)
 {
     if(rotor_type == RotorType_Stepper)
        stepper->current_el = el;
+}
+
+//---------------------------------------------------------------------------
+void TRotor::wobbleEnable(bool enable)
+{
+    flags &= ~R_ROTOR_WOBBLE;
+    flags |= enable ? R_ROTOR_WOBBLE:0;
+}
+
+//---------------------------------------------------------------------------
+// rotate the antenna in a circle around its current az and el
+void TRotor::wobble(void)
+{
+    if(!isPortOpen() || !wobbleEnable())
+        return;
+
+    double new_az, az = getAzimuth();
+    double new_el, el = getElevation();
+    double step_size = 2.0 * DTR;
+    double angle = 0;
+    unsigned long d;
+
+    while(angle <= (M_PI * 2.0)) {
+        new_az = az + wobble_radius * cos(angle);
+        new_el = el + wobble_radius * sin(angle);
+        angle += step_size;
+
+        d = getRotationTime(new_az, new_el);
+        moveTo(new_az, new_el);
+
+        delay(d);
+    }
+
+
 }
 
 //---------------------------------------------------------------------------
