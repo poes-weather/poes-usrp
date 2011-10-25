@@ -41,6 +41,7 @@ public:
     double azimuth(void);
     void   azimuth(double az);
     void   setlimits(double min_value, double max_value, bool az);
+    void   setAzEl(double Az, double El);
 
     double elevation(void);
     void   elevation(double el);

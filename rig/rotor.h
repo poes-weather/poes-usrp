@@ -30,7 +30,7 @@
 #define R_ROTOR_ENABLE            16       // rotor is enabled
 #define R_ROTOR_CCW               32       // direction is counter clock wise
 #define R_ROTOR_PARK              64       // parking is enabled
-#define R_ROTOR_WOBBLE           128       // wobble antenna in circles
+#define R_ROTOR_WOBBLE           128       // conical scan
 //---------------------------------------------------------------------------
 
 
@@ -53,14 +53,14 @@ typedef enum TRotorType_t
     RotorType_GS232B,
     RotorType_SPID,
     RotorType_JRK,
-    RotorType_Monstrum,
+    RotorType_Monstrum
 } TRotorType_t;
 
 //---------------------------------------------------------------------------
 typedef enum TCommType_t
 {
     Comm_Default,
-    Comm_Network,
+    Comm_Network
 } TCommType;
 
 //---------------------------------------------------------------------------

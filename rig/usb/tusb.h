@@ -1,6 +1,6 @@
 /*
-    HRPT-Decoder, a software for processing POES high resolution weather satellite imagery.
-    Copyright (C) 2010 Free Software Foundation, Inc.
+    POES-Weather Ltd Sensor Benchmark, a software for testing different sensors used to align antennas.
+    Copyright (C) 2011 Free Software Foundation, Inc.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,43 +18,42 @@
     Email: <postmaster@poes-weather.com>
     Web: <http://www.poes-weather.com>
 */
+//---------------------------------------------------------------------------
+#ifndef USB_H
+#define USB_H
+
+#include <usb.h>
+#include <vector>
+
+class QStringList;
+class TUSBDevice;
+
+using namespace std;
 
 //---------------------------------------------------------------------------
-
-#ifndef JRKCONFDIALOG_H
-#define JRKCONFDIALOG_H
-
-#include <QDialog>
-#include "rig.h"
-
-namespace Ui {
-    class JrkConfDialog;
-}
-
-class JrkConfDialog : public QDialog
+class TUSB
 {
-    Q_OBJECT
-
 public:
-    explicit JrkConfDialog(TRotor *rotor_, bool azimuth_, QWidget *parent = 0);
-    ~JrkConfDialog();
+    TUSB(void);
+    ~TUSB(void);
 
-    double getMinDeg(void);
-    double getMaxDeg(void);
+    int count_devices(void);
+    int list_devices(u_int16_t vendor);
+    void open_devices(void);
+    void conf_devices(int conf);
+    int  device_index(TUSBDevice *dev);
+
+    TUSBDevice *get_device(int index);
+    TUSBDevice *get_device_by_sn(QString serialnr);
+
+    QStringList device_names(QString firstItem = "");
+
+protected:
+    void clearlist(void);
 
 private:
-    Ui::JrkConfDialog *ui;
-    TRotor *rotor;
-    TJRK *jrk;
-    bool azimuth;
+    vector<TUSBDevice *> usblist;
 
-private slots:
-    void on_readMaxFeedbackButton_clicked();
-    void on_readMinFeedbackButton_clicked();
-    void on_buttonBox_accepted();
-    void on_jrkStatusButton_clicked();
-    void on_movetoMinBtn_clicked();
-    void on_movetoMaxBtn_clicked();
 };
 
-#endif // JRKCONFDIALOG_H
+#endif // USB_H

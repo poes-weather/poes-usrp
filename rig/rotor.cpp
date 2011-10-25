@@ -30,8 +30,6 @@
 
 #define SER_IO_BUFF_SIZE 128
 
-static const double RTD = 180.0 / M_PI;
-static const double DTR = M_PI / 180.0;
 
 //---------------------------------------------------------------------------
 TRotor::TRotor(TRig *_rig)
@@ -202,7 +200,7 @@ bool TRotor::openPort(void)
     case RotorType_Stepper:  return stepper->openLPT();
     case RotorType_GS232B:   return gs232b->openCOM();
     case RotorType_SPID:     return spid->openCOM();
-    case RotorType_JRK:      return jrk->openCOM();
+    case RotorType_JRK:      return jrk->open();
     case RotorType_Monstrum: return monster->openCOM();
 
     default:
@@ -216,7 +214,7 @@ void TRotor::closePort(void)
     stepper->closeLPT();
     gs232b->closeCOM();
     spid->closeCOM();
-    jrk->closeCOM();
+    jrk->close();
     monster->closeCOM();
 }
 
@@ -228,7 +226,7 @@ bool TRotor::isPortOpen(void)
     case RotorType_Stepper:  return stepper->isLPTOpen();
     case RotorType_GS232B:   return gs232b->isCOMOpen();
     case RotorType_SPID:     return spid->isCOMOpen();
-    case RotorType_JRK:      return jrk->isCOMOpen();
+    case RotorType_JRK:      return jrk->isOpen();
     case RotorType_Monstrum: return monster->isCOMOpen();
 
     default:
@@ -355,7 +353,7 @@ double TRotor::getAzimuth(void)
     case RotorType_Stepper: return stepper->current_az;
     case RotorType_GS232B: return gs232b->current_az;
     case RotorType_SPID: return spid->current_az;
-    case RotorType_JRK: return jrk->current_az;
+    case RotorType_JRK: return jrk->current_az(1);
     case RotorType_Monstrum: return monster->current_x;
 
     default:
@@ -371,7 +369,7 @@ double TRotor::getElevation(void)
     case RotorType_Stepper: return stepper->current_el;
     case RotorType_GS232B: return gs232b->current_el;
     case RotorType_SPID: return spid->current_el;
-    case RotorType_JRK: return jrk->current_el;
+    case RotorType_JRK: return jrk->current_el(1);
     case RotorType_Monstrum: return monster->current_y;
 
     default:
@@ -382,8 +380,13 @@ double TRotor::getElevation(void)
 //---------------------------------------------------------------------------
 void TRotor::setAzimuth(double az)
 {
-    if(rotor_type == RotorType_Stepper)
-       stepper->current_az = az;
+    switch(rotor_type)
+    {
+    case RotorType_Stepper: stepper->current_az = az; break;
+    case RotorType_JRK: jrk->adjustToAz(az); break;
+
+    default: {}
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -471,7 +474,7 @@ void TRotor::XYtoAzEl(double X, double Y, double *az, double *el)
     double tanX, tanX2, sinY2, sinY, A, B;
 
     tanX = tan(X * DTR);
-    tanX2 = tanX * tanX;   //tanX2 = tanX^2 or tanX * tanX
+    tanX2 = tanX * tanX;
     sinY  = sin(Y * DTR);
     sinY2 = sinY * sinY;
 

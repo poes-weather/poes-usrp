@@ -26,14 +26,13 @@
 
 #include <QString>
 #include <QStringList>
+#include "qextserialport.h"
 
 #include "rig.h"
 
+class QextSerialPort;
 class QDateTime;
 class QSettings;
-
-class TJrkUSB;
-class TUSB;
 
 //---------------------------------------------------------------------------
 class TJRK
@@ -45,17 +44,14 @@ public:
     void writeSettings(QSettings *reg);
     void readSettings(QSettings *reg);
 
-    bool isOpen(void);
-    bool setDevices(int az_index, int el_index);
-    bool loadDevices(void);
-    QStringList deviceNames(void);
-    int  deviceIndex(bool az);
+    bool isCOMOpen(void);
+    bool openCOM(void);
+    void closeCOM(void);
 
-    bool open(void);
-    void close(void);
-
+    quint16 readErrorHalting(unsigned char id);
+    quint16 readErrorOccurred(unsigned char id);
+    void    errorStrings(QStringList *sl, unsigned char id, quint16 err);
     QString errorString(void);
-    QString status(bool az);
 
     void    clearError(bool az);
     void    clearErrors(void);
@@ -66,26 +62,42 @@ public:
     bool moveToEl(double el);
     bool readPosition(void);
 
-    double  current_az(int mode = 1);
-    double  current_el(int mode = 1);
-    void    adjustToAz(double az);
-    void    adjustToEl(double el);
+    QString az_deviceId, el_deviceId;
+    int     az_id, el_id;
+    double  current_az, current_el; // in degrees, 0-90 el 0-360 az
 
-    int  minFeedback(bool az);
-    int  maxFeedback(bool az);
-    void minFeedback(bool az, int fb);
-    void maxFeedback(bool az, int fb);
+    int     flags;
 
-    quint16 readFeedback(bool az, int mode);
-    void    setTarget(bool az, quint16 t);
+    // feedback parameters
+    int    el_min_fk, el_max_fk;
+    int    az_min_fk, az_max_fk;
 
-    int flags;
+    quint16 readFeedback(bool az);
+    QString status(bool az);
+
 protected:
+    bool    open(QextSerialPort *port, QString portname);
+
+    quint16 readTarget(unsigned char id);
+    bool    setTargetHiRes(unsigned char id, quint16 target);
+    bool    setTargetLowRes(unsigned char id, int magnitude);
+
+    quint16 degrees2target(double degrees, double max_degrees);
+    //quint16 degrees2target(double degrees, bool azimuth);
+    double  target2degrees(quint16 target, double max_degrees);
+    //double  target2degrees(quint16 target, bool azimuth);
+
+    quint16 magnitude2target(int magnitude, bool analog);
+    int     target2magnitude(quint16 target, bool analog);
+
+    bool    send3bytecommand(unsigned char id, unsigned char cmd);
+    bool    readshort(quint16 *data);
 
 private:
-    TRotor  *rotor;
-    TJrkUSB *az_jrk, *el_jrk;
-    TUSB    *usb;
+    TRotor *rotor;
+    QextSerialPort *az_port, *el_port, *port;
+    unsigned char *iobuff;
+
 };
 
 #endif // JRK_H

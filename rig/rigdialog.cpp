@@ -124,10 +124,19 @@ RigDialog::RigDialog(QWidget *parent) :
     m_ui->spidPorted->setText(rig->rotor->spid->deviceId);
 
     // Pololu Jrk settings
+    QStringList sl = rig->rotor->jrk->deviceNames();
+    m_ui->jrkAzCb->addItems(sl);
+    m_ui->jrkAzCb->setCurrentIndex(rig->rotor->jrk->deviceIndex(true) + 1);
+    m_ui->jrkElCb->addItems(sl);
+    m_ui->jrkElCb->setCurrentIndex(rig->rotor->jrk->deviceIndex(false) + 1);
+
+
+#if 0
     m_ui->jrkAzPortEd->setText(rig->rotor->jrk->az_deviceId);
     m_ui->jrkAzIdEd->setValue(rig->rotor->jrk->az_id);
     m_ui->jrkElPortEd->setText(rig->rotor->jrk->el_deviceId);
     m_ui->jrkElIdEd->setValue(rig->rotor->jrk->el_id);
+#endif
 
 #if 0
     // Oak USB
@@ -396,6 +405,7 @@ void RigDialog::on_rotorZeroPosBtn_clicked()
 
     dlg->setlimits(rig->rotor->az_min, rig->rotor->az_max, true);
     dlg->setlimits(rig->rotor->el_min, rig->rotor->el_max, false);
+    dlg->setAzEl(rig->rotor->getAzimuth(), rig->rotor->getElevation());
 
     if(dlg->exec()) {
         flags |= (256 | 2);
@@ -539,10 +549,8 @@ void RigDialog::applyRotorSettings(void)
     rig->rotor->stepper->rotor_el_ratio = m_ui->elRatiospinBox->value();
 
     // jrk settings
-    rig->rotor->jrk->az_deviceId = m_ui->jrkAzPortEd->text();
-    rig->rotor->jrk->az_id       = m_ui->jrkAzIdEd->value();
-    rig->rotor->jrk->el_deviceId = m_ui->jrkElPortEd->text();
-    rig->rotor->jrk->el_id       = m_ui->jrkElIdEd->value();
+    rig->rotor->jrk->setDevices(m_ui->jrkAzCb->currentIndex() - 1,
+                                m_ui->jrkElCb->currentIndex() - 1);
 
     if(rig->rotor->rotor_type == RotorType_Stepper) {
         m_ui->az_spinBox->setSingleStep((360.0 / (double) rig->rotor->stepper->rotor_spr_az) / ((double) rig->rotor->stepper->rotor_az_ratio));
@@ -698,15 +706,8 @@ void RigDialog::on_calibrateJrkElButton_clicked()
 //---------------------------------------------------------------------------
 void RigDialog::calibrateJrk(bool azimuth)
 {
-    int id;
-
     rig->rotor->closePort();
     applyRotorSettings();
-
-    id = azimuth ? rig->rotor->jrk->az_id:rig->rotor->jrk->el_id;
-
-    if(id < 0)
-        return;
 
     if(!rig->rotor->openPort()) {
         QMessageBox::critical(this, "Error: Communication failure!", rig->rotor->getErrorString());

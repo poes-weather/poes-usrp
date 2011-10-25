@@ -47,6 +47,10 @@ class QListWidgetItem;
 #   define MIN(a, b) (a < b ? a:b)
 #endif
 
+static const double RTD = 180.0 / M_PI;
+static const double DTR = M_PI / 180.0;
+
+
 double GetStartTime(QDateTime utc, int mode=0);
 char   *ReplaceChar(const char *buff, char *ret, const char tofind, const char newchar);
 bool   SameDate(QDateTime dt1, QDateTime dt2);

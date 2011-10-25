@@ -11,15 +11,15 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Apply Rotor Position</string>
+   <string>Rotor is now pointing at</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>21</x>
      <y>40</y>
      <width>341</width>
-     <height>91</height>
+     <height>113</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="mainLayout">

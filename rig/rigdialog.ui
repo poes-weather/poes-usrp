@@ -532,7 +532,7 @@
          </rect>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -548,7 +548,7 @@
            </rect>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab_5">
            <attribute name="title">
@@ -807,7 +807,7 @@
              <attribute name="title">
               <string>Miscellaneous</string>
              </attribute>
-             <widget class="QWidget" name="">
+             <widget class="QWidget" name="layoutWidget">
               <property name="geometry">
                <rect>
                 <x>10</x>
@@ -837,7 +837,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="text">
-                  <string>Wobble antenna</string>
+                  <string>Conical scan</string>
                  </property>
                 </widget>
                </item>
@@ -898,7 +898,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="text">
-                  <string>Wobble</string>
+                  <string>Test</string>
                  </property>
                 </widget>
                </item>
@@ -1031,6 +1031,77 @@
             </layout>
            </widget>
           </widget>
+          <widget class="QWidget" name="tab_10">
+           <attribute name="title">
+            <string>Jrk Motor Control</string>
+           </attribute>
+           <widget class="QWidget" name="layoutWidget">
+            <property name="geometry">
+             <rect>
+              <x>12</x>
+              <y>10</y>
+              <width>411</width>
+              <height>189</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Azimuth</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Elevation</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="calibrateJrkAzButton">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>Calibrate...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QPushButton" name="calibrateJrkElButton">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>Calibrate...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QPushButton" name="jrkClrErrorsBtn">
+               <property name="text">
+                <string>Clear errors</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QPushButton" name="jrkStatusBtn">
+               <property name="text">
+                <string>Status</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="jrkAzCb"/>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="jrkElCb"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
           <widget class="QWidget" name="tab_12">
            <attribute name="title">
             <string>Monstrum X-Y</string>
@@ -1107,124 +1178,6 @@
               <widget class="QLineEdit" name="spidPorted">
                <property name="text">
                 <string>/dev/ttyS0</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-          <widget class="QWidget" name="tab_10">
-           <attribute name="title">
-            <string>Jrk Motor Control</string>
-           </attribute>
-           <widget class="QWidget" name="layoutWidget">
-            <property name="geometry">
-             <rect>
-              <x>12</x>
-              <y>10</y>
-              <width>411</width>
-              <height>189</height>
-             </rect>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_8">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Azimuth port:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="jrkAzPortEd"/>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="label_33">
-               <property name="text">
-                <string>Id:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QSpinBox" name="jrkAzIdEd">
-               <property name="minimum">
-                <number>-1</number>
-               </property>
-               <property name="maximum">
-                <number>255</number>
-               </property>
-               <property name="value">
-                <number>11</number>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_25">
-               <property name="text">
-                <string>Elevation port:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="jrkElPortEd"/>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="label_29">
-               <property name="text">
-                <string>Id:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="QSpinBox" name="jrkElIdEd">
-               <property name="minimum">
-                <number>-1</number>
-               </property>
-               <property name="maximum">
-                <number>255</number>
-               </property>
-               <property name="value">
-                <number>12</number>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0" colspan="2">
-              <widget class="QLabel" name="label_32">
-               <property name="text">
-                <string>Enter Id = -1 to disable a motor</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="4">
-              <widget class="QPushButton" name="calibrateJrkAzButton">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Calibrate...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="4">
-              <widget class="QPushButton" name="calibrateJrkElButton">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Calibrate...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="4">
-              <widget class="QPushButton" name="jrkClrErrorsBtn">
-               <property name="text">
-                <string>Clear errors</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="4">
-              <widget class="QPushButton" name="jrkStatusBtn">
-               <property name="text">
-                <string>Status</string>
                </property>
               </widget>
              </item>

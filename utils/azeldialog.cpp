@@ -39,6 +39,13 @@ AzElDialog::~AzElDialog()
 }
 
 //---------------------------------------------------------------------------
+void AzElDialog::setAzEl(double Az, double El)
+{
+    ui->azSB->setValue(Az);
+    ui->elSB->setValue(El);
+}
+
+//---------------------------------------------------------------------------
 void AzElDialog::on_AzElDialog_accepted()
 {
 

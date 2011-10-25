@@ -53,7 +53,10 @@ SOURCES += main.cpp \
     satellite/property/satprop.cpp \
     satellite/property/satpropdialog.cpp \
     satellite/property/rgbconf.cpp \
-    satellite/property/ndvi.cpp
+    satellite/property/ndvi.cpp \
+    rig/usb/usbdevice.cpp \
+    rig/usb/tusb.cpp \
+    rig/jrkusb.cpp
 HEADERS += mainwindow.h \
     decoder/hrptblock.h \
     version.h \
@@ -110,7 +113,11 @@ HEADERS += mainwindow.h \
     satellite/property/satprop.h \
     satellite/property/satpropdialog.h \
     satellite/property/rgbconf.h \
-    satellite/property/ndvi.h
+    satellite/property/ndvi.h \
+    rig/usb/usbdevice.h \
+    rig/usb/tusb.h \
+    rig/jrkusb.h \
+    rig/jrk_protocol.h
 DEFINES += _CRT_SECURE_NO_WARNINGS
 FORMS += mainwindow.ui \
     satellite/station/stationdialog.ui \
@@ -141,6 +148,7 @@ INCLUDEPATH += decoder \
     satellite/property \
     utils \
     rig \
+    rig/usb \
     rig/qextserialport \
     decoder/ljpeg \
     tools \
@@ -166,6 +174,10 @@ unix {
     HEADERS += rig/OakFeatureReports.h \
         rig/OakHidBase.h
     INCLUDEPATH += /usr/local/include
+
+    # libusb
+    INCLUDEPATH += /usr/include
+    LIBS += -lusb
 
     # DSP and FEC Library, http://www.ka9q.net/code/fec/
     #DEFINES += HAVE_LIBFEC
@@ -199,3 +211,7 @@ win32 {
 
 
 OTHER_FILES += 
+
+
+
+

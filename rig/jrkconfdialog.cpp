@@ -42,9 +42,9 @@ JrkConfDialog::JrkConfDialog(TRotor *rotor_, bool azimuth_, QWidget *parent) :
     ui->minDegrees->setMaximum(azimuth ? 360:180);
     ui->maxDegrees->setMaximum(azimuth ? 360:180);
 
-    ui->minFeedback->setValue(azimuth ? jrk->az_min_fk:jrk->el_min_fk);
+    ui->minFeedback->setValue(jrk->minFeedback(azimuth));
     ui->minDegrees->setValue(azimuth ? rotor->az_min:rotor->el_min);
-    ui->maxFeedback->setValue(azimuth ? jrk->az_max_fk:jrk->el_max_fk);
+    ui->maxFeedback->setValue(jrk->maxFeedback(azimuth));
     ui->maxDegrees->setValue(azimuth ? rotor->az_max:rotor->el_max);
 }
 
@@ -66,23 +66,18 @@ void JrkConfDialog::on_jrkStatusButton_clicked()
 void JrkConfDialog::on_buttonBox_accepted()
 {
     double *min_deg, *max_deg;
-    int *min_fk, *max_fk;
 
     if(azimuth) {
-        min_fk = &jrk->az_min_fk;
-        max_fk = &jrk->az_max_fk;
         min_deg = &rotor->az_min;
         max_deg = &rotor->az_max;
     }
     else {
-        min_fk = &jrk->el_min_fk;
-        max_fk = &jrk->el_max_fk;
         min_deg = &rotor->el_min;
         max_deg = &rotor->el_max;
     }
 
-    *min_fk = ui->minFeedback->value();
-    *max_fk = ui->maxFeedback->value();
+    jrk->minFeedback(azimuth, ui->minFeedback->value());
+    jrk->maxFeedback(azimuth, ui->maxFeedback->value());
     *min_deg = ui->minDegrees->value();
     *max_deg = ui->maxDegrees->value();
 }
@@ -90,7 +85,7 @@ void JrkConfDialog::on_buttonBox_accepted()
 //---------------------------------------------------------------------------
 void JrkConfDialog::on_readMinFeedbackButton_clicked()
 {
-    quint16 data = jrk->readFeedback(azimuth);
+    quint16 data = jrk->readFeedback(azimuth, 1);
 
     if(data == 0xffff)
         on_jrkStatusButton_clicked();
@@ -101,10 +96,22 @@ void JrkConfDialog::on_readMinFeedbackButton_clicked()
 //---------------------------------------------------------------------------
 void JrkConfDialog::on_readMaxFeedbackButton_clicked()
 {
-    quint16 data = jrk->readFeedback(azimuth);
+    quint16 data = jrk->readFeedback(azimuth, 1);
 
     if(data == 0xffff)
         on_jrkStatusButton_clicked();
     else
-        ui->maxFeedback->setValue((int)jrk->readFeedback(azimuth));
+        ui->maxFeedback->setValue((int) data);
+}
+
+//---------------------------------------------------------------------------
+void JrkConfDialog::on_movetoMinBtn_clicked()
+{
+    jrk->setTarget(azimuth, 0);
+}
+
+//---------------------------------------------------------------------------
+void JrkConfDialog::on_movetoMaxBtn_clicked()
+{
+    jrk->setTarget(azimuth, 4095);
 }
