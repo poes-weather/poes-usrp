@@ -262,8 +262,8 @@ bool TRotor::moveToXY(double x, double y)
 //---------------------------------------------------------------------------
 bool TRotor::moveTo(double az, double el)
 {
-    az = ClipValue(az, az_max, 0);
-    el = ClipValue(el, el_max, 0);
+    if(az < az_min || az > az_max || el < el_min || el > el_max)
+        return true;
 
     switch(rotor_type)
     {
@@ -281,7 +281,8 @@ bool TRotor::moveTo(double az, double el)
 //---------------------------------------------------------------------------
 bool TRotor::moveToAz(double az)
 {
-    az = ClipValue(az, az_max, 0);
+    if(az < az_min || az > az_max)
+        return true;
 
     switch(rotor_type)
     {
@@ -299,7 +300,8 @@ bool TRotor::moveToAz(double az)
 //---------------------------------------------------------------------------
 bool TRotor::moveToEl(double el)
 {
-    el = ClipValue(el, el_max, 0);
+    if(el < el_min || el > el_max)
+        return true;
 
     switch(rotor_type)
     {
