@@ -83,6 +83,7 @@ public:
     TMonstrum  *monster;
 
     double      az_max, az_min, el_max, el_min;
+    int         az_speed, el_speed;
 
     TCommType  commtype;
     QString    host;

@@ -88,6 +88,7 @@ private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
     void on_buttonBox_accepted();
     void on_monstrumStatusBtn_clicked();
+    void on_wobbleBtn_clicked();
 };
 
 #endif // RIGDIALOG_H

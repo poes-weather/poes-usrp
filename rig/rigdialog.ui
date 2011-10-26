@@ -559,8 +559,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>431</width>
-              <height>231</height>
+              <width>428</width>
+              <height>208</height>
              </rect>
             </property>
             <property name="currentIndex">
@@ -570,147 +570,141 @@
              <attribute name="title">
               <string>Type</string>
              </attribute>
-             <widget class="QWidget" name="layoutWidget">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>10</y>
-                <width>391</width>
-                <height>156</height>
-               </rect>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_9">
-               <item row="0" column="1" colspan="2">
-                <widget class="QCheckBox" name="enableRotor">
-                 <property name="text">
-                  <string>Enable automatic rotor control</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>Rotor type:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QComboBox" name="rotorTypeCb">
-                 <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_9">
+                <item row="0" column="1" colspan="2">
+                 <widget class="QCheckBox" name="enableRotor">
                   <property name="text">
-                   <string>Stepper</string>
+                   <string>Enable automatic rotor control</string>
                   </property>
-                 </item>
-                 <item>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_3">
                   <property name="text">
-                   <string>GS-232B</string>
+                   <string>Rotor type:</string>
                   </property>
-                 </item>
-                 <item>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QComboBox" name="rotorTypeCb">
+                  <item>
+                   <property name="text">
+                    <string>Stepper</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>GS-232B</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Alfa-SPID</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Pololu Jrk Motor Control</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Monstrum X-Y</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <spacer name="horizontalSpacer_7">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>98</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QComboBox" name="commtypeCb">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="currentIndex">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Rotor default</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Network</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_26">
                   <property name="text">
-                   <string>Alfa-SPID</string>
+                   <string>Communication:</string>
                   </property>
-                 </item>
-                 <item>
+                 </widget>
+                </item>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="label_31">
                   <property name="text">
-                   <string>Pololu Jrk Motor Control</string>
+                   <string>Host:</string>
                   </property>
-                 </item>
-                 <item>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLineEdit" name="hostEd">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="text">
-                   <string>Monstrum X-Y</string>
+                   <string>192.168.1.10</string>
                   </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="1" column="2">
-                <spacer name="horizontalSpacer_7">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>98</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="2" column="1">
-                <widget class="QComboBox" name="commtypeCb">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="currentIndex">
-                  <number>0</number>
-                 </property>
-                 <item>
+                  <property name="readOnly">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="label_12">
                   <property name="text">
-                   <string>Rotor default</string>
+                   <string>Port:</string>
                   </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Network</string>
+                 </widget>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QSpinBox" name="hostPortEd">
+                  <property name="enabled">
+                   <bool>false</bool>
                   </property>
-                 </item>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_26">
-                 <property name="text">
-                  <string>Communication:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
-                <widget class="QLabel" name="label_31">
-                 <property name="text">
-                  <string>Host:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QLineEdit" name="hostEd">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>192.168.1.10</string>
-                 </property>
-                 <property name="readOnly">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>Port:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="1">
-                <widget class="QSpinBox" name="hostPortEd">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="readOnly">
-                  <bool>false</bool>
-                 </property>
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>65535</number>
-                 </property>
-                 <property name="value">
-                  <number>1234</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
+                  <property name="readOnly">
+                   <bool>false</bool>
+                  </property>
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>65535</number>
+                  </property>
+                  <property name="value">
+                   <number>1234</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </widget>
             <widget class="QWidget" name="tab_8">
              <attribute name="title">
@@ -844,7 +838,7 @@
                <item row="1" column="6">
                 <widget class="QSpinBox" name="elSpeed">
                  <property name="minimum">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <property name="maximum">
                   <number>5000</number>
@@ -912,7 +906,7 @@
                <item row="1" column="2">
                 <widget class="QSpinBox" name="azSpeed">
                  <property name="minimum">
-                  <number>1</number>
+                  <number>0</number>
                  </property>
                  <property name="maximum">
                   <number>5000</number>

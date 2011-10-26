@@ -91,6 +91,12 @@ RigDialog::RigDialog(QWidget *parent) :
     m_ui->parkCb->setChecked(rig->rotor->parkingEnabled());
     m_ui->parkElSp->setValue(rig->rotor->parkEl);
     m_ui->parkAzSp->setValue(rig->rotor->parkAz);
+    m_ui->azSpeed->setValue(rig->rotor->az_speed);
+    m_ui->elSpeed->setValue(rig->rotor->el_speed);
+
+    m_ui->wobbleCb->setChecked(rig->rotor->wobbleEnable());
+    m_ui->wobbleradiusSb->setValue(rig->rotor->wobble_radius);
+
 
     // control
 #if 1
@@ -529,6 +535,11 @@ void RigDialog::applyRotorSettings(void)
     rig->rotor->parkingEnabled(m_ui->parkCb->isChecked());
     rig->rotor->parkEl = m_ui->parkElSp->value();
     rig->rotor->parkAz = m_ui->parkAzSp->value();
+    rig->rotor->az_speed = m_ui->azSpeed->value();
+    rig->rotor->el_speed = m_ui->elSpeed->value();
+
+    rig->rotor->wobbleEnable(m_ui->wobbleCb->isChecked());
+    rig->rotor->wobble_radius = m_ui->wobbleradiusSb->value();
 
     // gs-232b rotor settings
     rig->rotor->gs232b->deviceId = m_ui->serialPortEd->text();
@@ -749,4 +760,13 @@ void RigDialog::on_jrkStatusBtn_clicked()
 void RigDialog::on_monstrumStatusBtn_clicked()
 {
     QMessageBox::information(this, "Monstrum X-Y Status", rig->rotor->getStatusString());
+}
+
+//---------------------------------------------------------------------------
+void RigDialog::on_wobbleBtn_clicked()
+{
+    if(!rig->rotor->isPortOpen())
+        QMessageBox::critical(this, "Error: Communication is not open!", "Toggle Apply button");
+    else
+        rig->rotor->wobble();
 }

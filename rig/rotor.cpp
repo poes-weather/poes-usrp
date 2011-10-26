@@ -52,6 +52,8 @@ TRotor::TRotor(TRig *_rig)
 
     az_max = 360; az_min = 0;
     el_max = 90;  el_min = 0;
+    az_speed = 20;
+    el_speed = 20;
 
     wobble_radius = 1;
 
@@ -98,6 +100,12 @@ void TRotor::writeSettings(QSettings *reg)
       reg->setValue("AzMin", az_min);
       reg->setValue("ElMin", el_min);
 
+      reg->setValue("AzSpeed", az_speed);
+      reg->setValue("ElSpeed", el_speed);
+
+      reg->setValue("WobbleRadius", wobble_radius);
+
+
       stepper->writeSettings(reg);
       gs232b->writeSettings(reg);
       spid->writeSettings(reg);
@@ -127,6 +135,11 @@ void TRotor::readSettings(QSettings *reg)
       el_max = reg->value("ElMax", 90).toDouble();
       az_min = reg->value("AzMin", 0).toDouble();
       el_min = reg->value("ElMin", 0).toDouble();
+
+      az_speed = reg->value("AzSpeed", 1).toInt();
+      el_speed = reg->value("ElSpeed", 1).toInt();
+
+      wobble_radius = reg->value("WobbleRadius", 1).toDouble();
 
       stepper->readSettings(reg);
       gs232b->readSettings(reg);
@@ -416,16 +429,14 @@ void TRotor::wobble(void)
     double new_el, el = getElevation();
     double step_size = 2.0 * DTR;
     double angle = 0;
-    unsigned long d;
+    unsigned long d = getRotationTime(az + 2, el + 2);
 
     while(angle <= (M_PI * 2.0)) {
         new_az = az + wobble_radius * cos(angle);
         new_el = el + wobble_radius * sin(angle);
         angle += step_size;
 
-        d = getRotationTime(new_az, new_el);
         moveTo(new_az, new_el);
-
         delay(d);
     }
 
@@ -435,8 +446,18 @@ void TRotor::wobble(void)
 //---------------------------------------------------------------------------
 unsigned long TRotor::getRotationTime(double toAz, double toEl)
 {
- unsigned long ms;
+    unsigned long ms;
 
+#if 1
+
+    double az_time = fabs(getAzimuth() - toAz) * ((double) az_speed);
+    double el_time = fabs(getElevation() - toEl) * ((double) el_speed);
+
+    ms = rint(MAX(az_time, el_time));
+
+    return ms;
+
+#else
     switch(rotor_type)
     {
     case RotorType_GS232B:
@@ -447,11 +468,19 @@ unsigned long TRotor::getRotationTime(double toAz, double toEl)
        ms = spid->getRotationTime(toAz, toEl);
     break;
 
+    case RotorType_JRK:
+       //ms = jrk->getRotationTime(toAz, toEl);
+       ms = 10;
+    break;
+
     default:
         return ms = 0;
     }
 
     return ms;
+#endif
+
+
 }
 
 //---------------------------------------------------------------------------
