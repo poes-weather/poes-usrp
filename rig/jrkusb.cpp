@@ -253,26 +253,25 @@ double TJrkUSB::feedbackToPos(int feedback)
 //---------------------------------------------------------------------------
 unsigned short TJrkUSB::posToTarget(double deg)
 {
-    double t, d;
+    double t, d_deg, dpt;
     unsigned short u16;
 
-    if(deg < min_deg)
-        deg = min_deg;
-    if(deg > max_deg)
-        deg = max_deg;
+    deg = ((deg < min_deg) ? min_deg:((deg > max_deg) ? max_deg:deg));
 
     if(deg >= max_deg)
         u16 = 4095;
     else if(deg <= min_deg)
         u16 = 0;
     else {
-        d = max_deg - min_deg;
-        if(d <= 0)
+        d_deg = max_deg - min_deg;
+        if(d_deg <= 0)
             return 0;
 
-        t = (4095.0 / d) * deg;
+        dpt = d_deg / 4095.0; // degrees per target tick
+
+        t = (deg - min_deg) / dpt;
         u16 = rint(t);
     }
 
-    return u16;
+    return (u16 & 0x0fff);
 }
