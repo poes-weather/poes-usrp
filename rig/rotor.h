@@ -31,6 +31,7 @@
 #define R_ROTOR_CCW               32       // direction is counter clock wise
 #define R_ROTOR_PARK              64       // parking is enabled
 #define R_ROTOR_WOBBLE           128       // conical scan
+#define R_ROTOR_XY_TYPE          512
 //---------------------------------------------------------------------------
 
 
@@ -116,6 +117,10 @@ public:
     bool moveToAz(double az);
     bool moveToEl(double el);
     bool moveToXY(double x, double y);
+
+    void isXY(bool yes);
+    bool isXY(void);
+
     void stopMotor(void);
 
     double getAzimuth(void);
@@ -130,7 +135,6 @@ public:
 
     bool readPosition(void);
     unsigned long getRotationTime(double toAz, double toEl);
-    bool isXY(void);
 
     int  flags;
     char *iobuff;

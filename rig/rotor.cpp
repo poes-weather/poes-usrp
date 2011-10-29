@@ -250,7 +250,18 @@ bool TRotor::isPortOpen(void)
 //---------------------------------------------------------------------------
 bool TRotor::isXY(void)
 {
-    return rotor_type == RotorType_Monstrum ? true:false;
+    return flags &  R_ROTOR_XY_TYPE ? true:false;
+}
+
+//---------------------------------------------------------------------------
+void TRotor::isXY(bool yes)
+{
+    flags &= ~R_ROTOR_XY_TYPE;
+
+    if(rotor_type == RotorType_Monstrum)
+        yes = true;
+
+    flags |= yes ? R_ROTOR_XY_TYPE:0;
 }
 
 //---------------------------------------------------------------------------

@@ -239,13 +239,13 @@ bool TGS232B::readPosition(void)
     qDebug("%s", iobuff);
 
     if(sscanf(iobuff+3, "%d", &angle) != 1) {
-        qDebug("wrong AZ reply %s", iobuff);
+        qDebug("wrong AZ/X reply %s", iobuff);
         return false;
     }
     current_az = angle;
 
     if (sscanf(iobuff+11, "%d", &angle) != 1) {
-        qDebug("wrong EL reply %s", iobuff);
+        qDebug("wrong EL/Y reply %s", iobuff);
         return false;
     }
     current_el = angle;
@@ -256,8 +256,8 @@ bool TGS232B::readPosition(void)
 //---------------------------------------------------------------------------
 bool TGS232B::moveTo(double az, double el)
 {
- double i_az, i_el;
- unsigned long wait_ms;
+    double i_az, i_el, x, y;
+    unsigned long wait_ms;
 
     if(!isCOMOpen())
         return false;
@@ -265,9 +265,10 @@ bool TGS232B::moveTo(double az, double el)
     if(rotate_next > QDateTime::currentDateTime())
         return false;
 
-    qDebug("GS232 Move to Az: %.2f El: %.2f", az, el);
+    qDebug("GS232 Move to Az/X: %.2f El/Y: %.2f", az, el);
 
-    if(flags & R_ROTOR_CCW) {
+    // fixme...
+    if(flags & R_ROTOR_CCW && !rotor->isXY()) {
         el = 180.0 - el;
         az = az + 180.0;
 
@@ -284,13 +285,20 @@ bool TGS232B::moveTo(double az, double el)
         qDebug("GS232 Move to CCW Az: %.2f El: %.2f", az, el);
     }
 
+    if(rotor->isXY()) {
+        rotor->AzEltoXY(az, el, &x, &y);
+        az = x;
+        el = y;
+    }
+
     i_az = ClipValue(rint(az), 360, 0);
     i_el = ClipValue(rint(el), 180, 0);
 
     if(i_az == current_az && i_el == current_el)
         return true;
 
-    wait_ms = getRotationTime(i_az, i_el);
+    if(!rotor->isXY())
+        wait_ms = getRotationTime(i_az, i_el);
 
     sprintf(iobuff, "W%03d %03d\r\n", (int) i_az, (int) i_el);
     if(write_buffer(iobuff)) {
@@ -299,6 +307,8 @@ bool TGS232B::moveTo(double az, double el)
 
        rotate_next = QDateTime::currentDateTime();
        rotate_next.addMSecs(wait_ms + 100);
+
+       qDebug("GS232 Move to Az/X: %.2f El/Y: %.2f", current_az, current_el);
 
        return true;
     }

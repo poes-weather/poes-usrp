@@ -122,6 +122,7 @@ RigDialog::RigDialog(QWidget *parent) :
     // gs-232b rotor settings
     m_ui->serialPortEd->setText(rig->rotor->gs232b->deviceId);
     m_ui->gsSpeedCb->setCurrentIndex((int) rig->rotor->gs232b->speed - 1);
+    m_ui->gsXYCb->setChecked(rig->rotor->isXY());
 
     // Monstrum rotor settings
     m_ui->monstrumPort->setText(rig->rotor->monster->deviceId);
@@ -544,6 +545,7 @@ void RigDialog::applyRotorSettings(void)
     // gs-232b rotor settings
     rig->rotor->gs232b->deviceId = m_ui->serialPortEd->text();
     rig->rotor->gs232b->speed    = (TGS232B_Speed_t) (m_ui->gsSpeedCb->currentIndex() + 1);
+    rig->rotor->isXY(m_ui->gsXYCb->isChecked());
 
     // alphaspid settings
     rig->rotor->spid->deviceId = m_ui->spidPorted->text();
