@@ -142,6 +142,7 @@ bool TJRK::open(void)
     if(!isOpen())
         return false;
 
+    flags = 0;
     clearErrors();
 
     az_jrk->minPos(rotor->az_min);
@@ -330,8 +331,26 @@ bool TJRK::moveTo(double az, double el)
     if(!isOpen())
         return false;
 
-    // fixme
+    // fixme, fix me!!!! this should be in rotor.cpp!!!!!
     qDebug("JRK Moveto Az: %g El: %g", az, el);
+
+    if(flags & R_ROTOR_CCW) {
+        el = 180.0 - el;
+        az = az + 180.0;
+
+        if(az > 360)
+            az -= 360.0;
+        if(az < 0)
+            az = 0;
+
+        if(el > 180)
+            el = 180;
+        if(el < 0)
+            el = 0;
+
+        qDebug("GS232 Move to CCW Az: %.2f El: %.2f", az, el);
+    }
+
 
     az_jrk->moveTo(az);
     el_jrk->moveTo(el);

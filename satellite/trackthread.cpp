@@ -427,6 +427,8 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
         rotor_flags_ptr = &rig->rotor->gs232b->flags;
     else if(rig->rotor->rotor_type == RotorType_SPID)
         rotor_flags_ptr = &rig->rotor->spid->flags;
+    else if(rig->rotor->rotor_type == RotorType_JRK)
+        rotor_flags_ptr = &rig->rotor->jrk->flags;
     else
         rotor_flags_ptr = NULL;
 
