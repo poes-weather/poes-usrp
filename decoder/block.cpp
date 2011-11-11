@@ -181,8 +181,13 @@ bool TBlock::setBlockType(Block_Type type)
 
        case AHRPT_BlockType:
        {
+#if 1
+           cadu->derandomize(true);
+           cadu->reed_solomon(true);
+#else
            cadu->derandomize(satprop->derandomize());
            cadu->reed_solomon(satprop->rs_decode());
+#endif
 
            block = (TAHRPT *) new TAHRPT(this);
 

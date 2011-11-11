@@ -49,7 +49,7 @@ typedef enum BlockType_t
     LRPT_BlockType,
     MN1LRPT_BlockType,
     LRIT_GOES_BlockType,   // uncompressed
-    LRIT_JPEG_BlockType,   // JPEG compressed
+    LRIT_JPEG_BlockType   // JPEG compressed
 } Block_Type;
 #define NUM_SUPPORTED_BLOCKS (LRIT_JPEG_BlockType + 1)
 
@@ -57,7 +57,7 @@ typedef enum Block_ImageType_t
 {
     Channel_ImageType = 0,      // grayscale per channel
     RGB_ImageType,              // user defined RGB
-    NDVI_ImageType,             // user defined NDVI
+    NDVI_ImageType             // user defined NDVI
 } Block_ImageType;
 
 

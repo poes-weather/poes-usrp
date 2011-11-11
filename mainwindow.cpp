@@ -842,7 +842,7 @@ TSat *MainWindow::getNextSat(void)
  PList  *list;
  double utc_daynum, daynum;
  TSat   *nextsat = NULL;
- int    i, flags;
+ int    i, flags, ii, max_ii;
 
     if(!countSats(1))
         return NULL;
@@ -851,28 +851,40 @@ TSat *MainWindow::getNextSat(void)
     utc_daynum = GetStartTime(utc);
 
     list = new PList;
+    ii = 0;
+    max_ii = 144; // search 24 x 6 hours (6 days) forward
 
-    // get one satellite pass from each active satellite
-    for(i=0; i<satList->Count; i++) {
-        sat = (TSat *)satList->ItemAt(i);
-        if(!sat->isActive() || !sat->CalcAll(utc_daynum))
-            continue;
+    while(ii < max_ii) {
+        // get one satellite pass from each active satellite
+        for(i=0; i<satList->Count; i++) {
+            sat = (TSat *)satList->ItemAt(i);
+            if(!sat->isActive() || !sat->CalcAll(utc_daynum))
+                continue;
 
-        // is it currently above qth?
-        if(sat->aostime < utc_daynum && sat->lostime > utc_daynum)
-            list->Add(sat);
-        else if(sat->aostime >= utc_daynum)
-            list->Add(sat);
-        else {
-            // find next orbit pass
-            while(sat->GetNextRiseTime(utc, 1) > 0) {
-                if(!sat->CalcAll(sat->aostime))
-                    break;
-                if(sat->aostime >= utc_daynum) {
-                    list->Add(sat);
-                    break;
+            // is it currently above qth?
+            if(sat->aostime < utc_daynum && sat->lostime > utc_daynum)
+                list->Add(sat);
+            else if(sat->aostime >= utc_daynum)
+                list->Add(sat);
+            else {
+                // find next orbit pass
+                while(sat->GetNextRiseTime(utc, 1) > 0) {
+                    if(!sat->CalcAll(sat->aostime))
+                        break;
+                    if(sat->aostime >= utc_daynum) {
+                        list->Add(sat);
+                        break;
+                    }
                 }
             }
+        }
+
+        if(list->Count)
+            break;
+        else {
+            utc = utc.addSecs(60);
+            utc_daynum = GetStartTime(utc);
+            ii++;
         }
     }
 

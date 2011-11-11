@@ -162,6 +162,7 @@ INCLUDEPATH += decoder \
 
 LIBS += -Ldecoder/LritRice
 #DEFINES += DEBUG_GPS
+DEFINES += DEBUG_AHRPT
 
 # --------------------------------------------------------------------------------
 # Mr Linus Thorvalds (linux) settings
