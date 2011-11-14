@@ -54,8 +54,8 @@ CADUSplitterDialog::~CADUSplitterDialog()
 //---------------------------------------------------------------------------
 void CADUSplitterDialog::on_infileToolButton_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("CADU Input File"), ui->infileEd->text(),
-                                                    tr("CADU Files (*.cadu);;All files (*.*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("CADU/VCDU Input File"), ui->infileEd->text(),
+                                                    tr("CADU/VCDU Files (*.cadu);;All files (*.*)"));
 
     if(!fileName.isEmpty()) {
         ui->infileEd->setText(fileName);
@@ -210,7 +210,7 @@ void CADUSplitterDialog::on_genGOESdataBtn_clicked()
     bool found;
 
     char txt[512];
-    FILE *txtfp;
+    FILE *txtfp = NULL;
 
     txtfp = fopen("/home/patrik/tmp/GOES-LRIT_cadu_frames_2.txt", "w");
 

@@ -320,7 +320,7 @@ bool TAHRPT::readFrameScanLine(int frame_nr)
             continue; // ??? sumthing is VERY wrong...
         }
 
-        cadu->rsdecode();
+       // cadu->rsdecode();
 
         bits_to_read += (read_size << 3);
         tot_bits_red += bits_to_read;

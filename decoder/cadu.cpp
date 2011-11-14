@@ -199,8 +199,10 @@ bool TCADU::init_derandomizer(void)
 //---------------------------------------------------------------------------
 void TCADU::randomize(void)
 {
-    for(size_t i=0; i<payload_size; i++)
-        payload_buf[i] ^= derand_buf[i];
+    if(derandomize()) {
+        for(size_t i=0; i<payload_size; i++)
+            payload_buf[i] ^= derand_buf[i];
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -272,8 +274,8 @@ unsigned char *TCADU::getpayload(void)
     if(fread(payload_buf, payload_size, 1, fp) != 1)
         return NULL;
 
-    if(derandomize())
-        randomize();
+    randomize();
+    rsdecode();
 
     return payload_buf;
 }
