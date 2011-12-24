@@ -73,7 +73,7 @@
          <item row="0" column="1">
           <widget class="QLineEdit" name="infileEd">
            <property name="text">
-            <string>test.cadu</string>
+            <string>/home/patrik/tmp/2011-11-17--meteosat9--cadu-mod.dat</string>
            </property>
           </widget>
          </item>
@@ -90,7 +90,7 @@
             <string>Derandomize</string>
            </property>
            <property name="checked">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -269,7 +269,7 @@
          <item row="1" column="0" colspan="2">
           <widget class="QLineEdit" name="lritoutfileEd">
            <property name="text">
-            <string/>
+            <string>/home/patrik/tmp/test-0.lrit</string>
            </property>
           </widget>
          </item>

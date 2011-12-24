@@ -51,6 +51,9 @@ protected:
 
     bool    openFiles(bool ahrpt);
     void    closeFiles(void);
+    void    lrit_msg_header_decoder_debug(unsigned char *hdr, FILE *debug_fp);
+    void    lrit_secondary_header_decoder(unsigned char *hdr);
+    void    print_debug(char *buf, FILE *dfp);
 
 private slots:
     void on_genGOESdataBtn_clicked();

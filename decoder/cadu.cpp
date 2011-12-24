@@ -115,6 +115,18 @@ void TCADU::reset(void)
 }
 
 //---------------------------------------------------------------------------
+void TCADU::lrit_cadu(bool enable)
+{
+    setflag(CADU_LRIT, enable);
+}
+
+//---------------------------------------------------------------------------
+bool TCADU::isLRIT(void)
+{
+    return (flags & CADU_LRIT) ? true:false;
+}
+
+//---------------------------------------------------------------------------
 void TCADU::setflag(int flag, bool on)
 {
     flags &= ~flag;
@@ -334,7 +346,12 @@ quint8 TCADU::key(void)
 //---------------------------------------------------------------------------
 quint8 *TCADU::get_mpdu(void)
 {
-    quint8 *mpdu = payload_buf + 0x08;
+    quint8 *mpdu;
+
+    if(isLRIT())
+        mpdu = payload_buf + 0x06; // VCDU primary header is only 6 bytes
+    else
+        mpdu = payload_buf + 0x08; // AHRPT
 
     return mpdu;
 }
@@ -342,9 +359,14 @@ quint8 *TCADU::get_mpdu(void)
 //---------------------------------------------------------------------------
 quint8 *TCADU::get_mpdu_packet(quint16 hdr_ptr)
 {
-    // M-PDU header is 2 bytes, 0x08 + 0x02 = 0x0a
-    quint16 pos = 0x0a + hdr_ptr;
-    //quint8 *mpdu = payload_buf + 0x0a + hdr_ptr;
+    // AHRPT: M-PDU header is 2 bytes + VCDU header size, 0x08 + 0x02 = 0x0a
+    // LRIT:  M-PDU header is 2 bytes + VCDU header size, 0x06 + 0x02 = 0x08
+    quint16 pos;
+
+    if(isLRIT())
+        pos = 0x08 + hdr_ptr;
+    else
+        pos = 0x0a + hdr_ptr;
 
     return pos >= payload_size ? NULL:(payload_buf + pos);
 }
@@ -352,7 +374,13 @@ quint8 *TCADU::get_mpdu_packet(quint16 hdr_ptr)
 //---------------------------------------------------------------------------
 bool TCADU::first_hdr_ptr(quint16 *pos)
 {
-    quint8 *ccsds = payload_buf + 0x08;
+    quint8 *ccsds;
+
+    if(isLRIT())
+        ccsds = payload_buf + 0x06;
+    else
+        ccsds = payload_buf + 0x08;
+
 
     *pos = ((ccsds[0] << 8) | ccsds[1]) & 0x07ff; // 11 bit
 

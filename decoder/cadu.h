@@ -33,6 +33,7 @@
 
 #define CADU_RS_DECODE      1
 #define CADU_DERANDOMIZE    2
+#define CADU_LRIT           4 // LRIT HRIT CADU type
 
 #define CADU_PACKET_SIZE    1020
 #define CADU_SYNC_SIZE 4
@@ -49,6 +50,9 @@ public:
 
     bool init(FILE *fp_, size_t payload_size_, FILE *oufp_= NULL);
     void reset(void);
+
+    void lrit_cadu(bool enable);
+    bool isLRIT(void);
 
     // VCDU Primary Header Information
     quint8     scid(void);
