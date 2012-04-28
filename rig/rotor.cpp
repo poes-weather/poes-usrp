@@ -379,7 +379,7 @@ double TRotor::getAzimuth(void)
     case RotorType_Stepper: return stepper->current_az;
     case RotorType_GS232B: return gs232b->current_az;
     case RotorType_SPID: return spid->current_az;
-    case RotorType_JRK: return jrk->current_az(1);
+    case RotorType_JRK: return jrk->current_az();
     case RotorType_Monstrum: return monster->current_x;
 
     default:
@@ -395,7 +395,7 @@ double TRotor::getElevation(void)
     case RotorType_Stepper: return stepper->current_el;
     case RotorType_GS232B: return gs232b->current_el;
     case RotorType_SPID: return spid->current_el;
-    case RotorType_JRK: return jrk->current_el(1);
+    case RotorType_JRK: return jrk->current_el();
     case RotorType_Monstrum: return monster->current_y;
 
     default:
@@ -409,7 +409,7 @@ void TRotor::setAzimuth(double az)
     switch(rotor_type)
     {
     case RotorType_Stepper: stepper->current_az = az; break;
-    case RotorType_JRK: jrk->adjustToAz(az); break;
+    case RotorType_JRK: jrk->moveToAz(az); break;
 
     default: {}
     }

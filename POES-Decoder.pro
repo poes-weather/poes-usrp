@@ -56,7 +56,9 @@ SOURCES += main.cpp \
     satellite/property/ndvi.cpp \
     rig/usb/usbdevice.cpp \
     rig/usb/tusb.cpp \
-    rig/jrkusb.cpp
+    rig/jrkusb.cpp \
+    decoder/fyahrptblock.cpp \
+    rig/jrklut.cpp
 HEADERS += mainwindow.h \
     decoder/hrptblock.h \
     version.h \
@@ -82,8 +84,6 @@ HEADERS += mainwindow.h \
     decoder/block.h \
     decoder/mn1lrptblock.h \
     decoder/ReedSolomon.h \
-    decoder/RiceDecompression.h \
-    decoder/PacketDecompression.h \
     decoder/lritblock.h \
     decoder/ljpeg/ljpegdecompressor.h \
     decoder/ljpeg/ljpegcomponent.h \
@@ -117,7 +117,9 @@ HEADERS += mainwindow.h \
     rig/usb/usbdevice.h \
     rig/usb/tusb.h \
     rig/jrkusb.h \
-    rig/jrk_protocol.h
+    rig/jrk_protocol.h \
+    decoder/fyahrptblock.h \
+    rig/jrklut.h
 DEFINES += _CRT_SECURE_NO_WARNINGS
 FORMS += mainwindow.ui \
     satellite/station/stationdialog.ui \
@@ -160,7 +162,17 @@ INCLUDEPATH += decoder \
 # DEFINES += HAVE_IMAGE_PLUGINS
 # --------------------------------------------------------------------------------
 
-LIBS += -Ldecoder/LritRice
+#LIBS += -Ldecoder/LritRice
+#LIBS += -L/home/patrik/prog/poes-weather/ -lrice
+# LIBS += -L/usr/local/lib -lrice
+# LIBS += -lrice
+
+#LIBS += -Ldecoder/lritrice -lLritRice.a
+#LIBS += -ldecoder/lritrice/LritRice.a
+#LIBS += -L/home/patrik/prog/poes-weather/decoder/lritrice/ -lLritRice
+#LIBS += libLritRice.a
+#LIBS += -L/home/patrik/prog/poes-weather/decoder/lritrice/LritRice.a
+
 #DEFINES += DEBUG_GPS
 DEFINES += DEBUG_AHRPT
 
@@ -184,7 +196,7 @@ unix {
     # see conf/README-libfec.txt
     DEFINES += HAVE_LIBFEC
     LIBS += -L/usr/local/lib -lfec
-    #DEFINES += DEBUG_RS
+    DEFINES += DEBUG_RS
 }
 
 
@@ -214,6 +226,7 @@ win32 {
 
 
 OTHER_FILES += 
+
 
 
 

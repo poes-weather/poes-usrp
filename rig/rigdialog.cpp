@@ -526,11 +526,18 @@ void RigDialog::applyRotorSettings(void)
     rig->rotor->el_max = m_ui->maxElSb->value();
     rig->rotor->az_min = m_ui->minAzSb->value();
     rig->rotor->el_min = m_ui->minElSb->value();
-
     setRotorControlLimits();
+
     flags &= ~16;
     flags |= rig->rotor->rotor_type == RotorType_JRK ? 16:0;
 
+    if(flags & 16) {
+        rig->rotor->jrk->maxPos(true, rig->rotor->az_max);
+        rig->rotor->jrk->minPos(true, rig->rotor->az_min);
+
+        rig->rotor->jrk->maxPos(false, rig->rotor->el_max);
+        rig->rotor->jrk->minPos(false, rig->rotor->el_min);
+    }
 
     // rotor parking
     rig->rotor->parkingEnabled(m_ui->parkCb->isChecked());
@@ -730,12 +737,6 @@ void RigDialog::calibrateJrk(bool azimuth)
     JrkConfDialog dlg(rig->rotor, azimuth, this);
     if(dlg.exec()) {
         flags |= 1024;
-
-        m_ui->maxAzSb->setValue(rig->rotor->az_max);
-        m_ui->minAzSb->setValue(rig->rotor->az_min);
-
-        m_ui->maxElSb->setValue(rig->rotor->el_max);
-        m_ui->minElSb->setValue(rig->rotor->el_min);
 
         on_applyRotorBtn_clicked();
 

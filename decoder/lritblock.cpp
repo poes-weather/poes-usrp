@@ -19,15 +19,14 @@
     Web: <http://www.poes-weather.com>
 */
 //---------------------------------------------------------------------------
-
-
 #include <QImage>
 #include <stdlib.h>
 
 #include "block.h"
 #include "cadu.h"
 #include "lritblock.h"
-#include "RiceDecompression.h"
+#include <RiceDecompression.h>
+
 
 #define nolibjpeg
 
@@ -349,7 +348,7 @@ bool TLRIT::uncompress(const char *filename)
 
  */
 
- CRiceDecompression *rice;
+ //CRiceDecompression *rice;
  long int filepos, len;
  int pdu_hdrlen, i, frames;
  FILE *out;
@@ -377,10 +376,13 @@ bool TLRIT::uncompress(const char *filename)
 
 
 */
-   rice = new CRiceDecompression(riceFlags, bpp, ricePixelsPerBlock, columns, riceScanLinesPerPacket);
+   CRiceDecompression *rice = new CRiceDecompression(riceFlags, bpp, ricePixelsPerBlock, columns, riceScanLinesPerPacket);
+
+
+
    frames = block->getFrames();
    i = 0;
-   while(i < frames && (pdu_hdrlen = read_PDU_PrimaryHeader()) > 0) {
+   while(i < frames /*&& (pdu_hdrlen = read_PDU_PrimaryHeader()) > 0*/) {
       i++;
 
       fwrite(readBuff, LRIT_PDU_PRIM_HDR_LEN, 1, out);

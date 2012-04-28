@@ -54,6 +54,14 @@ typedef struct jrk_variables_t
     unsigned short errorOccurredBits;   // Offset 21
 } jrk_variables;
 
+typedef struct jrk_pid_variables_t
+{
+    double cP, cI, cD; // user input coefficients
+    double error;       // current error = scaled - target
+    double integral;    // sum of all errors
+    double derivative;  // current - previous error
+} jrk_pid_variables;
+
 
 #define JRK_PARAMETER_INPUT_MODE                        1  // 1 byte unsigned value.  Valid values are INPUT_MODE_*.  Init parameter.
 #define JRK_PARAMETER_INPUT_MINIMUM                     2  // 2 byte unsigned value (0-4095)

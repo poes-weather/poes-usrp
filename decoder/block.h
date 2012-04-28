@@ -44,6 +44,7 @@ typedef enum BlockType_t
     FY1HRPT_BlockType,
     AHRPT_BlockType,
     MN1HRPT_BlockType,
+    FYAHRPT_BlockType,
 
     // semi supported
     LRPT_BlockType,

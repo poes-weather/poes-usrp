@@ -47,14 +47,12 @@ private:
     TRotor *rotor;
     TJRK *jrk;
     bool azimuth;
+    QString lut;
 
 private slots:
-    void on_readMaxFeedbackButton_clicked();
-    void on_readMinFeedbackButton_clicked();
     void on_buttonBox_accepted();
     void on_jrkStatusButton_clicked();
-    void on_movetoMinBtn_clicked();
-    void on_movetoMaxBtn_clicked();
+    void on_openButton_clicked();
 };
 
 #endif // JRKCONFDIALOG_H

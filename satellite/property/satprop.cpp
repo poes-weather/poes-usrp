@@ -382,7 +382,7 @@ bool TSatProp::rs_decode(void)
 //---------------------------------------------------------------------------
 void TSatProp::flagState(unsigned int *flag, unsigned int bitmap, bool on)
 {
-    *flag &= bitmap;
+    *flag &= ~bitmap;
     *flag |= on ? bitmap:0;
 }
 

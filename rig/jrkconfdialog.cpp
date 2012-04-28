@@ -21,6 +21,7 @@
 
 //---------------------------------------------------------------------------
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "jrkconfdialog.h"
 #include "ui_jrkconfdialog.h"
@@ -37,15 +38,10 @@ JrkConfDialog::JrkConfDialog(TRotor *rotor_, bool azimuth_, QWidget *parent) :
     jrk     = rotor->jrk;
     azimuth = azimuth_;
 
-    this->setWindowTitle(azimuth ? "Calibrate Azimuth":"Calibrate Elevation");
+    this->setWindowTitle(azimuth ? "Calibrate Jrk Azimuth":"Calibrate Jrk Elevation");
 
-    ui->minDegrees->setMaximum(azimuth ? 360:180);
-    ui->maxDegrees->setMaximum(azimuth ? 360:180);
-
-    ui->minFeedback->setValue(jrk->minFeedback(azimuth));
-    ui->minDegrees->setValue(azimuth ? rotor->az_min:rotor->el_min);
-    ui->maxFeedback->setValue(jrk->maxFeedback(azimuth));
-    ui->maxDegrees->setValue(azimuth ? rotor->az_max:rotor->el_max);
+    ui->lutCb->setChecked(jrk->enableLUT(azimuth));
+    lut = jrk->lutFile(azimuth);
 }
 
 //---------------------------------------------------------------------------
@@ -65,53 +61,17 @@ void JrkConfDialog::on_jrkStatusButton_clicked()
 //---------------------------------------------------------------------------
 void JrkConfDialog::on_buttonBox_accepted()
 {
-    double *min_deg, *max_deg;
+    jrk->enableLUT(azimuth, ui->lutCb->isChecked());
+    jrk->lutFile(azimuth, lut);
 
-    if(azimuth) {
-        min_deg = &rotor->az_min;
-        max_deg = &rotor->az_max;
-    }
-    else {
-        min_deg = &rotor->el_min;
-        max_deg = &rotor->el_max;
-    }
-
-    jrk->minFeedback(azimuth, ui->minFeedback->value());
-    jrk->maxFeedback(azimuth, ui->maxFeedback->value());
-    *min_deg = ui->minDegrees->value();
-    *max_deg = ui->maxDegrees->value();
+    jrk->loadLUT(azimuth);
 }
 
 //---------------------------------------------------------------------------
-void JrkConfDialog::on_readMinFeedbackButton_clicked()
+void JrkConfDialog::on_openButton_clicked()
 {
-    quint16 data = jrk->readFeedback(azimuth, 1);
+    QString inifile = QFileDialog::getOpenFileName(this, tr("Open lookup table file"), lut, "INI files (*.ini);;All files (*.*)");
 
-    if(data == 0xffff)
-        on_jrkStatusButton_clicked();
-    else
-        ui->minFeedback->setValue(data);
-}
-
-//---------------------------------------------------------------------------
-void JrkConfDialog::on_readMaxFeedbackButton_clicked()
-{
-    quint16 data = jrk->readFeedback(azimuth, 1);
-
-    if(data == 0xffff)
-        on_jrkStatusButton_clicked();
-    else
-        ui->maxFeedback->setValue((int) data);
-}
-
-//---------------------------------------------------------------------------
-void JrkConfDialog::on_movetoMinBtn_clicked()
-{
-    jrk->setTarget(azimuth, 0);
-}
-
-//---------------------------------------------------------------------------
-void JrkConfDialog::on_movetoMaxBtn_clicked()
-{
-    jrk->setTarget(azimuth, 4095);
+    if(!inifile.isEmpty())
+        lut = inifile;
 }

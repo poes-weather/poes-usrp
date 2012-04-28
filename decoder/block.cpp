@@ -23,6 +23,7 @@
 #include "block.h"
 #include "hrptblock.h"
 #include "ahrptblock.h"
+#include "fyahrptblock.h"
 #include "mn1lrptblock.h"
 #include "mn1hrptblock.h"
 #include "fy1hrptblock.h"
@@ -32,9 +33,10 @@
 static const char *SUPPORTED_BLOCKS[NUM_SUPPORTED_BLOCKS] =
 {
    "NOAA HRPT",
-   "FENGYUN 1 HRPT",
+   "Feng Yun HRPT",
    "MetOp AHRPT",
    "METEOR M-N1 HRPT",
+   "Feng Yun AHRPT",
 
    "NOAA LRPT",
    "METEOR M-N1 LRPT",
@@ -82,6 +84,10 @@ void TBlock::freeBlock(void)
 
        case AHRPT_BlockType:
           delete ((TAHRPT *) block);
+       break;
+
+       case FYAHRPT_BlockType:
+          delete ((TFYAHRPT *) block);
        break;
 
        case MN1LRPT_BlockType:
@@ -164,14 +170,12 @@ void TBlock::setLittleEndian(bool on)
 
 //---------------------------------------------------------------------------
 bool TBlock::setBlockType(Block_Type type)
-{
-   if(blocktype != type)
-       freeBlock();
-
-   if(block)
-       return true;
+{    
+   freeBlock();
 
    cadu->reset();
+   cadu->derandomize(satprop->derandomize());
+   cadu->reed_solomon(satprop->rs_decode());
 
    switch(type)
    {
@@ -180,19 +184,13 @@ bool TBlock::setBlockType(Block_Type type)
        break;
 
        case AHRPT_BlockType:
-       {
-#if 1
-           cadu->derandomize(true);
-           cadu->reed_solomon(true);
-#else
-           cadu->derandomize(satprop->derandomize());
-           cadu->reed_solomon(satprop->rs_decode());
-#endif
+          block = (TAHRPT *) new TAHRPT(this);
+       break;
 
-           block = (TAHRPT *) new TAHRPT(this);
-
-           break;
-       }
+       case FYAHRPT_BlockType:
+          block = (TFYAHRPT *) new TFYAHRPT(this);
+          cadu->derandomize(true);
+       break;
 
        case MN1LRPT_BlockType:
           block = (TMN1LRPT *) new TMN1LRPT(this);
@@ -243,6 +241,10 @@ bool TBlock::open(const char *filename)
           return ((TAHRPT *) block)->init();
        break;
 
+       case FYAHRPT_BlockType:
+          return ((TFYAHRPT *) block)->init();
+       break;
+
        case MN1HRPT_BlockType:
           return ((TMN1HRPT *) block)->init();
        break;
@@ -280,6 +282,10 @@ int TBlock::getWidth(void)
           return ((TAHRPT *) block)->getWidth();
        break;
 
+       case FYAHRPT_BlockType:
+          return ((TFYAHRPT *) block)->getWidth();
+       break;
+
        case MN1HRPT_BlockType:
           return ((TMN1HRPT *) block)->getWidth();
        break;
@@ -311,6 +317,7 @@ int TBlock::getHeight(void)
    switch(blocktype) {
        case HRPT_BlockType:
        case AHRPT_BlockType:
+       case FYAHRPT_BlockType:
        case FY1HRPT_BlockType:
        case MN1LRPT_BlockType:
           return frames;
@@ -398,6 +405,7 @@ bool TBlock::isCompressed(void)
 
    switch(blocktype) {
        case AHRPT_BlockType:
+       case FYAHRPT_BlockType:
        case HRPT_BlockType:
        case FY1HRPT_BlockType:
        case MN1LRPT_BlockType:
@@ -422,6 +430,7 @@ bool TBlock::uncompress(const char *filename)
 
    switch(blocktype) {
        case AHRPT_BlockType:
+       case FYAHRPT_BlockType:
        case HRPT_BlockType:
        case FY1HRPT_BlockType:
        case MN1LRPT_BlockType:
@@ -467,6 +476,10 @@ int TBlock::getNumChannels(void)
 
        case AHRPT_BlockType:
           channels = ((TAHRPT *) block)->getNumChannels();
+       break;
+
+       case FYAHRPT_BlockType:
+          channels = ((TFYAHRPT *) block)->getNumChannels();
        break;
 
        case MN1HRPT_BlockType:
@@ -566,6 +579,10 @@ bool TBlock::toImage(QImage *image)
 
       case AHRPT_BlockType:
          return ((TAHRPT *) block)->toImage(image);
+      break;
+
+      case FYAHRPT_BlockType:
+         return ((TFYAHRPT *) block)->toImage(image);
       break;
 
       case MN1HRPT_BlockType:

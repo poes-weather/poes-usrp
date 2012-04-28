@@ -123,10 +123,17 @@ int TAHRPT::countFrames(void)
 long TAHRPT::count_AVHRR_HR_frames(void)
 {
     quint16 hdr_ptr, apid;
+    quint8  vcid, find_vcid;
     long    frames = 0;
+
+    find_vcid = 0x09; // MetOp
+    //find_vcid = 0x37; // FY3A -> guess
+    //find_vcid = 0x0d; // FY3A -> guess
 
 #ifdef DEBUG_AHRPT
     long errors = 0;
+
+    //cadu->outfp = fopen("/home/patrik/tmp/fy3a-derand.cadu", "wb");
 #endif
 
     fseek(fp, 0, SEEK_SET);
@@ -135,13 +142,21 @@ long TAHRPT::count_AVHRR_HR_frames(void)
         if(cadu->getpayload() == NULL)
             break;
 
-        if(cadu->vcid() != 0x09) // TODO: check if it is encrypted...
+        vcid = cadu->vcid();
+
+#ifdef DEBUG_AHRPT
+        qDebug("VCID: %d [0x%02x] @ 0x%08x", vcid, vcid, (unsigned int) cadu->getpacketaddress());
+        cadu->writepacket(true);
+#endif
+
+        if(vcid != find_vcid) // TODO: check if it is encrypted...
             continue;
 
         if(cadu->first_hdr_ptr(&hdr_ptr)) {
             apid = cadu->apid(cadu->get_mpdu_packet(hdr_ptr));
 
-            if(apid == 103 || apid == 104) {
+            // 0x047f fy3a guess
+            if(apid == 103 || apid == 104 /*|| apid == 0x047f*/) {
                 if(frames == 0)
                     block->setFirstFrameSyncPos(cadu->getpacketaddress());
 
@@ -149,11 +164,15 @@ long TAHRPT::count_AVHRR_HR_frames(void)
             }
 
 #ifdef DEBUG_AHRPT
-            if(!(apid == 103 || apid == 104)) {
+
+            if(!(apid == 103 || apid == 104 /*|| apid == 0x047f*/)) {
                 errors++;
 
                 qDebug("Bogus APID: %d @ 0x%08x", apid, (unsigned int) cadu->getpacketaddress());
             }
+            else
+                qDebug("APID: %d [0x%02x] @ 0x%08x", apid, apid, (unsigned int) cadu->getpacketaddress());
+
 #endif
 
         }
@@ -165,6 +184,12 @@ long TAHRPT::count_AVHRR_HR_frames(void)
 #endif
 
     block->setFrames(frames);
+
+#ifdef DEBUG_AHRPT
+    if(cadu->outfp)
+        fclose(cadu->outfp);
+    cadu->outfp = NULL;
+#endif
 
     return frames;
 }
@@ -260,7 +285,8 @@ bool TAHRPT::readFrameScanLine(int frame_nr)
         hdr_ptr = 0;
         if(cadu->first_hdr_ptr(&hdr_ptr)) {
             apid = cadu->apid(cadu->get_mpdu_packet(hdr_ptr));
-            if(!(apid == 103 || apid == 104))
+            // todo: fy3a
+            if(!(apid == 103 || apid == 104 /*|| apid == 1151*/))
                 continue;
 
             // TODO: check if it is encrypted

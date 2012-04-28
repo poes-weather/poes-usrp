@@ -61,23 +61,25 @@ public:
     void    clearErrors(void);
 
     void stop(void);
+    void setTarget(bool az, quint16 t);
     bool moveTo(double az, double el);
     bool moveToAz(double az);
     bool moveToEl(double el);
     bool readPosition(void);
 
-    double  current_az(int mode = 1);
-    double  current_el(int mode = 1);
-    void    adjustToAz(double az);
-    void    adjustToEl(double el);
+    double maxPos(bool az);
+    void   maxPos(bool az, double deg);
+    double minPos(bool az);
+    void   minPos(bool az, double deg);
 
-    int  minFeedback(bool az);
-    int  maxFeedback(bool az);
-    void minFeedback(bool az, int fb);
-    void maxFeedback(bool az, int fb);
+    bool enableLUT(bool az);
+    void enableLUT(bool az, bool on);
+    QString lutFile(bool az);
+    void    lutFile(bool az, QString lut);
+    void    loadLUT(bool az);
 
-    quint16 readFeedback(bool az, int mode);
-    void    setTarget(bool az, quint16 t);
+    double  current_az();
+    double  current_el();
 
     int flags;
 protected:

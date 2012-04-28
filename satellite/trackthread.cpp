@@ -262,6 +262,8 @@ void TrackThread::run()
 
         case 2: // satellite receded below LOS, post RX process and start to deinitialize
             {
+                rig->rotor->stopMotor();
+
                 if(rig_modes & 256) {
                     stopProcess(rx_proc); // dont check its pid, user might have killed it...
 

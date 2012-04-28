@@ -145,11 +145,6 @@ bool TJRK::open(void)
     flags = 0;
     clearErrors();
 
-    az_jrk->minPos(rotor->az_min);
-    az_jrk->maxPos(rotor->az_max);
-    el_jrk->minPos(rotor->el_min);
-    el_jrk->maxPos(rotor->el_max);
-
     bool rc = readPosition();
 
     if(rc)
@@ -210,36 +205,6 @@ QString TJRK::errorString(void)
 }
 
 //---------------------------------------------------------------------------
-int TJRK::minFeedback(bool az)
-{
-    return az ? az_jrk->minFeedback():el_jrk->minFeedback();
-}
-
-//---------------------------------------------------------------------------
-void TJRK::minFeedback(bool az, int fb)
-{
-    if(az)
-        az_jrk->minFeedback(fb & 0x0fff);
-    else
-        el_jrk->minFeedback(fb & 0x0fff);
-}
-
-//---------------------------------------------------------------------------
-int TJRK::maxFeedback(bool az)
-{
-    return az ? az_jrk->maxFeedback():el_jrk->maxFeedback();
-}
-
-//---------------------------------------------------------------------------
-void TJRK::maxFeedback(bool az, int fb)
-{
-    if(az)
-        az_jrk->maxFeedback(fb & 0x0fff);
-    else
-        el_jrk->maxFeedback(fb & 0x0fff);
-}
-
-//---------------------------------------------------------------------------
 void TJRK::clearErrors(void)
 {
     az_jrk->clearErrors();
@@ -252,15 +217,6 @@ void TJRK::clearError(bool az)
     TJrkUSB *d = az ? az_jrk:el_jrk;
 
     d->clearErrors();
-}
-
-//---------------------------------------------------------------------------
-// mode & 1 = read
-quint16 TJRK::readFeedback(bool az, int mode)
-{
-    TJrkUSB *d = az ? az_jrk:el_jrk;
-
-    return d->feedback(mode);
 }
 
 //---------------------------------------------------------------------------
@@ -281,17 +237,15 @@ QString TJRK::status(bool az)
 }
 
 //---------------------------------------------------------------------------
-// mode & 1 = read
-double TJRK::current_az(int mode)
+double TJRK::current_az(void)
 {
-    return az_jrk->readPos(mode);
+    return az_jrk->toDegrees(0, 1|2|8);
 }
 
 //---------------------------------------------------------------------------
-// mode & 1 = read
-double TJRK::current_el(int mode)
+double TJRK::current_el(void)
 {
-    return el_jrk->readPos(mode);
+    return el_jrk->toDegrees(0, 1|2|8);
 }
 
 //---------------------------------------------------------------------------
@@ -301,28 +255,6 @@ void TJRK::setTarget(bool az, quint16 t)
         az_jrk->setTarget(t);
     else
         el_jrk->setTarget(t);
-}
-
-//---------------------------------------------------------------------------
-// move min_az and max_az values
-void TJRK::adjustToAz(double az)
-{
-    az = az;
-#if 0
-    if(!az_jrk->readVariables())
-        return;
-
-    double target = az_jrk->target(0);
-    double pos    = current_az(0);
-    double delta  = az - pos;
-#endif
-
-}
-
-//---------------------------------------------------------------------------
-void TJRK::adjustToEl(double el)
-{
-    el = el;
 }
 
 //---------------------------------------------------------------------------
@@ -348,7 +280,7 @@ bool TJRK::moveTo(double az, double el)
         if(el < 0)
             el = 0;
 
-        qDebug("GS232 Move to CCW Az: %.2f El: %.2f", az, el);
+        qDebug("Jrk Move to CCW Az: %.2f El: %.2f", az, el);
     }
 
 
@@ -363,7 +295,7 @@ bool TJRK::moveTo(double az, double el)
 //---------------------------------------------------------------------------
 bool TJRK::moveToAz(double az)
 {
-    az_jrk->moveTo(az);
+    az_jrk->toValue(az);
 
     return true;
 }
@@ -371,9 +303,78 @@ bool TJRK::moveToAz(double az)
 //---------------------------------------------------------------------------
 bool TJRK::moveToEl(double el)
 {
-    el_jrk->moveTo(el);
+    el_jrk->toValue(el);
 
     return true;
+}
+
+//---------------------------------------------------------------------------
+double TJRK::maxPos(bool az)
+{
+    return az ? az_jrk->maxPos():el_jrk->maxPos();
+}
+
+//---------------------------------------------------------------------------
+void TJRK::maxPos(bool az, double deg)
+{
+    if(az)
+        az_jrk->maxPos(deg);
+    else
+        el_jrk->maxPos(deg);
+}
+
+//---------------------------------------------------------------------------
+void TJRK::minPos(bool az, double deg)
+{
+    if(az)
+        az_jrk->minPos(deg);
+    else
+        el_jrk->minPos(deg);
+}
+
+//---------------------------------------------------------------------------
+double TJRK::minPos(bool az)
+{
+    return az ? az_jrk->minPos():el_jrk->minPos();
+}
+
+//---------------------------------------------------------------------------
+void TJRK::lutFile(bool az, QString lut)
+{
+    if(az)
+        az_jrk->lutFile(lut);
+    else
+        el_jrk->lutFile(lut);
+}
+
+//---------------------------------------------------------------------------
+QString TJRK::lutFile(bool az)
+{
+    return az ? az_jrk->lutFile():el_jrk->lutFile();
+}
+
+//---------------------------------------------------------------------------
+bool TJRK::enableLUT(bool az)
+{
+    return az ? az_jrk->isFlagOn(JRK_USE_LUT):el_jrk->isFlagOn(JRK_USE_LUT);
+}
+
+//---------------------------------------------------------------------------
+void TJRK::enableLUT(bool az, bool on)
+{
+    if(az)
+        az_jrk->setFlag(JRK_USE_LUT, on);
+    else
+        el_jrk->setFlag(JRK_USE_LUT, on);
+}
+
+//---------------------------------------------------------------------------
+void TJRK::loadLUT(bool az)
+{
+    if(az)
+        az_jrk->loadLUT();
+    else
+        el_jrk->loadLUT();
 }
 
 //---------------------------------------------------------------------------

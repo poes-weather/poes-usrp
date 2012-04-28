@@ -105,7 +105,7 @@ public:
 
     bool openPort(void);
     void closePort(void);
-    bool isPortOpen(void);
+    bool isPortOpen(void); 
 
     QString getErrorString(void);
     QString getStatusString(void);
