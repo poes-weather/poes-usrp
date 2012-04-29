@@ -25,7 +25,7 @@
 #include "block.h"
 #include "cadu.h"
 #include "lritblock.h"
-#include <RiceDecompression.h>
+// #include <RiceDecompression.h>
 
 
 #define nolibjpeg

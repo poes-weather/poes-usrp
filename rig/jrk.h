@@ -61,11 +61,15 @@ public:
     void    clearErrors(void);
 
     void stop(void);
+    void start(void);
+
     void setTarget(bool az, quint16 t);
     bool moveTo(double az, double el);
     bool moveToAz(double az);
     bool moveToEl(double el);
     bool readPosition(void);
+
+    void moveAxisSome(bool az, int counts);
 
     double maxPos(bool az);
     void   maxPos(bool az, double deg);
@@ -82,6 +86,7 @@ public:
     double  current_el();
 
     int flags;
+
 protected:
 
 private:

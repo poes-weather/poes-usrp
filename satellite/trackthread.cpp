@@ -444,27 +444,22 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
             los_az = sat->sat_azi;
 
             // check if it crosses the pole
-#if 1
             if(fabs(aos_az - los_az) > 185)
                 *rotor_flags_ptr |= R_ROTOR_CCW;
-
-#else
-            if(sat->isNorthbound()) {
-                if((aos_az < 180 && (aos_az - los_az) < 0) ||
-                   (aos_az > 180 && (aos_az - los_az) > 0))
-                    *rotor_flags_ptr |= R_ROTOR_CCW;
-            }
-            else {
-                if((aos_az > 270 && (aos_az - los_az) > 0) ||
-                   (aos_az < 90 && (aos_az - los_az) < 0))
-                    *rotor_flags_ptr |= R_ROTOR_CCW;
-            }
-#endif
         }
 
     }
 
-    rig->rotor->moveTo(aos_az, sat_ele < 0 ? 0:sat_ele);
+    // try to prevent Jrk error: Maximum current exceeded when moving a long distance
+    if(rig->rotor->rotor_type == RotorType_JRK) {
+        rig->rotor->jrk->start();
+
+        // move it forward or backward some just to (try to) get rid of the current peak
+        rig->rotor->jrk->moveAxisSome(true, aos_az > rig->rotor->getAzimuth() ? 100:-100);
+    }
+
+
+    rig->rotor->moveTo(aos_az, sat_ele < 0 ? rig->rotor->el_min:sat_ele);
 
     sat->Track();
 }

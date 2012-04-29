@@ -194,9 +194,9 @@ unix {
 
     # DSP and FEC Library, http://www.ka9q.net/code/fec/
     # see conf/README-libfec.txt
-    DEFINES += HAVE_LIBFEC
-    LIBS += -L/usr/local/lib -lfec
-    DEFINES += DEBUG_RS
+    #DEFINES += HAVE_LIBFEC
+    #LIBS += -L/usr/local/lib -lfec
+    #DEFINES += DEBUG_RS
 }
 
 

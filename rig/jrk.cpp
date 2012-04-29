@@ -402,6 +402,35 @@ void TJRK::stop(void)
 }
 
 //---------------------------------------------------------------------------
+void TJRK::start(void)
+{
+    clearErrors();
+
+    // power motors
+    if(az_jrk->readVariables())
+        az_jrk->setTarget(az_jrk->vars.target);
+
+    if(el_jrk->readVariables())
+        el_jrk->setTarget(el_jrk->vars.target);
+}
+
+//---------------------------------------------------------------------------
+void TJRK::moveAxisSome(bool az, int counts)
+{
+    quint16 t;
+    int i, pos;
+
+    t = az ? az_jrk->vars.target:el_jrk->vars.target;
+    i = t + counts;
+    pos = i < 0 ? 0:(i > 4095 ? 4095:i);
+
+    if(az)
+        az_jrk->setTarget(pos);
+    else
+        el_jrk->setTarget(pos);
+}
+
+//---------------------------------------------------------------------------
 //
 //      Protected functions
 //
