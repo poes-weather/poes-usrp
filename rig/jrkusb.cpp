@@ -39,6 +39,7 @@ TJrkUSB::TJrkUSB(void)
     min_deg = 0;
     max_deg = 360;
     current_deg = 0;
+    counter = 0;
 
     iobuff = (unsigned char *) malloc(JRK_IO_BUF_SIZE + 1);
     memset(&vars, 0, sizeof(jrk_variables_t));
@@ -121,22 +122,6 @@ void TJrkUSB::writeSettings(QSettings *reg)
 
     reg->endGroup();
 }
-
-#if 0
-//---------------------------------------------------------------------------
-void TJrkUSB::calcOffsetDegrees(void)
-{
-    double deg = 0;
-    double delta = (max_deg - min_deg) / 2.0;
-
-    while(deg < delta)
-        deg += 90;
-
-    offset_deg = deg - delta;
-
-    qDebug("offset deg: %f", offset_deg);
-}
-#endif
 
 //---------------------------------------------------------------------------
 bool TJrkUSB::readVariables(void)
@@ -303,30 +288,45 @@ double TJrkUSB::toDegrees(unsigned short t, int mode)
     if(mode & 8)
         deg = lutToDegrees(t);
 
-    current_deg = deg;
-
     return deg;
 }
 
 //---------------------------------------------------------------------------
 // mode & 1 = use lookup table
-// mode & 2 = read position from device and move if needed
-void TJrkUSB::moveTo(double deg, int mode)
+bool TJrkUSB::moveTo(double deg, int mode)
 {
     if(!isOpen())
-        return;
+        return false;
+
+    if(deg < min_deg || deg > max_deg)
+        return false;
 
     unsigned short t;
 
     t = toValue(deg, mode & 1);
+    if(vars.target == t) {
+        counter++;
 
-    if(mode & 2)
-        if(readVariables())
-            if(vars.target == t)
-                return;
+#if 0
+        if(counter == 5) {
+            // spot on X times, stop motor
+            stop();
+
+            qDebug("Stopped Jrk #%s", sn_.toStdString().c_str());
+        }
+#endif
+
+        return true;
+    }
+    else
+        counter = 0;
 
     setTarget(t);
-    current_deg = deg;
+    vars.target = t;
+
+    qDebug("move Jrk #%s to %.03f", sn_.toStdString().c_str(), deg);
+
+    return true;
 }
 
 //---------------------------------------------------------------------------

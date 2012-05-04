@@ -28,7 +28,7 @@
 #define R_ROTOR_JOGGING            2       // it is now jogging
 #define R_ROTOR_IOERR              4       // could not be opened
 #define R_ROTOR_ENABLE            16       // rotor is enabled
-#define R_ROTOR_CCW               32       // direction is counter clock wise
+#define R_ROTOR_CCW               32       // direction is counter clock wise, elevation 180 - elev and azimuth + 180
 #define R_ROTOR_PARK              64       // parking is enabled
 #define R_ROTOR_WOBBLE           128       // conical scan
 #define R_ROTOR_XY_TYPE          512
@@ -112,6 +112,14 @@ public:
 
     void AzEltoXY(double az, double el, double *x, double *y);
     void XYtoAzEl(double X, double Y, double *az, double *el);
+
+    void setCCWFlag(double aos_az, double los_az);
+    bool isCCW(void);
+
+
+    void AzEltoCCW(double az_, double el_, double *az, double *el);
+    double ElToCCW(double el_);
+    double AzToCCW(double az_);
 
     bool moveTo(double az, double el);
     bool moveToAz(double az);

@@ -70,8 +70,8 @@ public:
 
     bool renderImage(void);
 
-    TSat      *getNextSat(void);
-    TSat      *getNextSatByName(const QString &name);
+    TSat      *getNextSat(double daynum_ = 0);
+    TSat      *getNextSatByName(const QString &name, double daynum_ = 0);
     TSettings *getSettings(void);
     TRig      *getRig(void);
     PList     *getSatList(void);

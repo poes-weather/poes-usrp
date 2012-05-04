@@ -84,6 +84,8 @@ void TRotor::writeSettings(QSettings *reg)
 {
     reg->beginGroup("Rotor");
 
+      flags &= ~R_ROTOR_CCW;
+
       reg->setValue("Flags", (int) flags);
       reg->setValue("Type", (int) rotor_type);
 
@@ -272,6 +274,65 @@ void TRotor::park(void)
 }
 
 //---------------------------------------------------------------------------
+void TRotor::setCCWFlag(double aos_az, double los_az)
+{
+    double delta = fabs(aos_az - los_az);
+
+    flags &= ~R_ROTOR_CCW;
+
+    // check if it will cross the north pole 0 <- 360 meridian counter clock wise
+    if(!isXY() && el_max > 90 && delta > 185) {
+        flags |= R_ROTOR_CCW;
+
+        qDebug("rotor CCW flag set: 180 - elevation, 180 + azimuth");
+    }
+}
+
+//---------------------------------------------------------------------------
+bool TRotor::isCCW(void)
+{
+    return (flags & R_ROTOR_CCW) ? true:false;
+}
+
+//---------------------------------------------------------------------------
+void TRotor::AzEltoCCW(double az_, double el_, double *az, double *el)
+{
+    *az = AzToCCW(az_);
+    *el = ElToCCW(el_);
+}
+
+//---------------------------------------------------------------------------
+double TRotor::AzToCCW(double az_)
+{
+    double az = az_;
+
+    if(flags & R_ROTOR_CCW)
+        az_ = az_ + 180.0;
+
+    if(az > 360)
+        az -= 360.0;
+    if(az < 0)
+        az += 360.0;
+
+    az = ClipValue(az_, az_max, az_min);
+
+    return az;
+}
+
+//---------------------------------------------------------------------------
+double TRotor::ElToCCW(double el_)
+{
+    double el = el_;
+
+    if(flags & R_ROTOR_CCW)
+        el_ = 180.0 - el_;
+
+    el = ClipValue(el_, el_max, el_min);
+
+    return el;
+}
+
+//---------------------------------------------------------------------------
 bool TRotor::moveToXY(double x, double y)
 {
     switch(rotor_type)
@@ -286,16 +347,17 @@ bool TRotor::moveToXY(double x, double y)
 //---------------------------------------------------------------------------
 bool TRotor::moveTo(double az, double el)
 {
-    if(az < az_min || az > az_max || el < el_min || el > el_max)
-        return true;
+    double raz, rel;
+
+    AzEltoCCW(az, el, &raz, &rel);
 
     switch(rotor_type)
     {
-    case RotorType_Stepper:  return stepper->moveTo(az, el);
-    case RotorType_GS232B:   return gs232b->moveTo(az, el);
-    case RotorType_SPID:     return spid->moveTo(az, el);
-    case RotorType_JRK:      return jrk->moveTo(az, el);
-    case RotorType_Monstrum: return monster->moveTo(az, el);
+    case RotorType_Stepper:  return stepper->moveTo(raz, rel);
+    case RotorType_GS232B:   return gs232b->moveTo(raz, rel);
+    case RotorType_SPID:     return spid->moveTo(raz, rel);
+    case RotorType_JRK:      return jrk->moveTo(raz, rel);
+    case RotorType_Monstrum: return monster->moveTo(raz, rel);
 
     default:
         return false;
@@ -306,7 +368,7 @@ bool TRotor::moveTo(double az, double el)
 bool TRotor::moveToAz(double az)
 {
     if(az < az_min || az > az_max)
-        return true;
+        return false;
 
     switch(rotor_type)
     {
@@ -325,7 +387,7 @@ bool TRotor::moveToAz(double az)
 bool TRotor::moveToEl(double el)
 {
     if(el < el_min || el > el_max)
-        return true;
+        return false;
 
     switch(rotor_type)
     {

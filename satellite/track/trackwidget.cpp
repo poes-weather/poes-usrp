@@ -117,7 +117,7 @@ TSat *TrackWidget::getNextSatellite(void)
  TSat    *_sat;
 
     if(m_ui->satcomboBox->currentIndex() <= 0) // automatic
-       _sat = mw->getNextSat();
+       _sat = mw->getNextSat(sat ? sat->lostime:0);
     else {
        if(sat && sat->name == m_ui->satcomboBox->currentText())
            return sat;

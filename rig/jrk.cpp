@@ -147,10 +147,7 @@ bool TJRK::open(void)
 
     bool rc = readPosition();
 
-    if(rc)
-        qDebug("Jrk Az: %f El: %f", az_jrk->currentPos(), el_jrk->currentPos());
-    else
-        qDebug("Jrk ERROR: Position read failed!");
+    // todo
 
     return rc;
 }
@@ -263,49 +260,27 @@ bool TJRK::moveTo(double az, double el)
     if(!isOpen())
         return false;
 
-    // fixme, fix me!!!! this should be in rotor.cpp!!!!!
-    qDebug("JRK Moveto Az: %g El: %g", az, el);
+    bool rc1 = az_jrk->moveTo(az);
+    bool rc2 = el_jrk->moveTo(el);
 
-    if(flags & R_ROTOR_CCW) {
-        el = 180.0 - el;
-        az = az + 180.0;
-
-        if(az > 360)
-            az -= 360.0;
-        if(az < 0)
-            az = 0;
-
-        if(el > 180)
-            el = 180;
-        if(el < 0)
-            el = 0;
-
-        qDebug("Jrk Move to CCW Az: %.2f El: %.2f", az, el);
+    if(rc1 || rc2) {
+        // qDebug("Jrk move to Az: %.3f el: %0.3f", az, el);
+        return true;
     }
-
-
-    az_jrk->moveTo(az);
-    el_jrk->moveTo(el);
-
-    // readPosition();
-
-    return true;
+    else
+        return false;
 }
 
 //---------------------------------------------------------------------------
 bool TJRK::moveToAz(double az)
 {
-    az_jrk->toValue(az);
-
-    return true;
+    return az_jrk->moveTo(az);
 }
 
 //---------------------------------------------------------------------------
 bool TJRK::moveToEl(double el)
 {
-    el_jrk->toValue(el);
-
-    return true;
+    return el_jrk->moveTo(el);
 }
 
 //---------------------------------------------------------------------------
@@ -375,6 +350,15 @@ void TJRK::loadLUT(bool az)
         az_jrk->loadLUT();
     else
         el_jrk->loadLUT();
+
+    if(az) {
+        rotor->az_min = az_jrk->minPos();
+        rotor->az_max = az_jrk->maxPos();
+    }
+    else {
+        rotor->el_min = el_jrk->minPos();
+        rotor->el_max = el_jrk->maxPos();
+    }
 }
 
 //---------------------------------------------------------------------------

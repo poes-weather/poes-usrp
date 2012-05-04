@@ -24,11 +24,13 @@
 
 #include <QThread>
 #include <QDateTimeEdit>
+#include <stdio.h>
 //---------------------------------------------------------------------------
 #define     TF_STOP     1
 
 class QLabel;
 class QProcess;
+class QDateTime;
 class QStringList;
 class MainWindow;
 class TSat;
@@ -61,6 +63,7 @@ protected:
     bool procRunning(QProcess *proc);
 
     void initRotor(TRig *rig, TSat *sat);
+    void moveTo(double az, double el);
 
 private:
     TrackWidget *tw;
@@ -71,6 +74,10 @@ private:
     QStringList *proc_que;
 
     QLabel *satLabel, *timeLabel, *sunLabel, *moonLabel;
+
+    QDateTime speed_dt;
+    double prev_el, prev_az;
+    FILE *debug_fp;
 
     int flags;
 

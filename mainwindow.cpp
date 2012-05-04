@@ -836,7 +836,7 @@ PList *MainWindow::getSatList(void)
 }
 
 //---------------------------------------------------------------------------
-TSat *MainWindow::getNextSat(void)
+TSat *MainWindow::getNextSat(double daynum_)
 {
  TSat   *sat;
  PList  *list;
@@ -849,6 +849,9 @@ TSat *MainWindow::getNextSat(void)
 
     QDateTime utc(QDateTime::currentDateTime().toUTC());
     utc_daynum = GetStartTime(utc);
+
+    if(daynum_ != 0)
+        utc_daynum = daynum_;
 
     list = new PList;
     ii = 0;
@@ -935,7 +938,7 @@ TSat *MainWindow::getNextSat(void)
 
 //---------------------------------------------------------------------------
 // no need to check pass thresholds here, this toggled by the user
-TSat *MainWindow::getNextSatByName(const QString &name)
+TSat *MainWindow::getNextSatByName(const QString &name, double daynum_)
 {
  TSat   *sat;
  double utc_daynum;
@@ -949,6 +952,9 @@ TSat *MainWindow::getNextSatByName(const QString &name)
 
     QDateTime utc(QDateTime::currentDateTime().toUTC());
     utc_daynum = GetStartTime(utc);
+
+    if(daynum_ != 0)
+        utc_daynum = daynum_;
 
     if(!sat->CalcAll(utc_daynum))
        return NULL;

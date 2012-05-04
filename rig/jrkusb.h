@@ -72,11 +72,10 @@ public:
     void    maxPos(double deg) { max_deg = (deg < 0 ? 0:(deg > 360 ? 360:deg)); }
     double  minPos(void)       { return min_deg; }
     void    minPos(double deg) { min_deg = (deg < 0 ? 0:(deg > 360 ? 360:deg)); }
-    double  currentPos(void)   { return current_deg; }
 
     double  toDegrees(unsigned short t, int mode = 8); // always use lut if present
     unsigned short toValue(double deg, int mode = 1);
-    void    moveTo(double deg, int mode = 1);
+    bool    moveTo(double deg, int mode = 1);
     double  readPos(void);
 
     TUSBDevice *udev(void) { return jrk; }
@@ -95,6 +94,7 @@ private:
 
     QString    sn_, lutFile_;
     double     max_deg, min_deg, current_deg;
+    int counter;
 
     vector<JrkLUT *> jrklut;
 };

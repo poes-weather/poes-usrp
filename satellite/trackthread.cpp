@@ -22,7 +22,9 @@
 #include <QLabel>
 #include <QWidget>
 #include <QProcess>
+#include <QDateTime>
 #include <math.h>
+#include <stdio.h>
 
 #include "trackthread.h"
 #include "trackwidget.h"
@@ -31,6 +33,7 @@
 #include "Satellite.h"
 #include "rig.h"
 
+#define _DEBUG_FP_
 
 //---------------------------------------------------------------------------
 TrackThread::TrackThread(QObject *parent) : QThread(parent)
@@ -40,6 +43,7 @@ TrackThread::TrackThread(QObject *parent) : QThread(parent)
     rig = mw->getRig();
 
     sat = NULL;
+    debug_fp = NULL;
 
     rx_proc      = new QProcess(this);
     post_rx_proc = new QProcess(this);
@@ -66,6 +70,10 @@ TrackThread::TrackThread(QObject *parent) : QThread(parent)
             moonLabel, SLOT(setStyleSheet(const QString &)));
     connect(this, SIGNAL(setMoonLabelText(const QString &)),
             moonLabel, SLOT(setText(const QString &)));
+
+    prev_el = 0;
+    prev_az = 0;
+    speed_dt = QDateTime::currentDateTime();
 }
 
 //---------------------------------------------------------------------------
@@ -77,6 +85,11 @@ TrackThread::~TrackThread()
     delete rx_proc;
     delete post_rx_proc;
     delete proc_que;
+
+    if(debug_fp)
+        fclose(debug_fp);
+
+    debug_fp = NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -138,7 +151,26 @@ void TrackThread::run()
     rig_modes |= rig->autorecord() ? 4:0;
     rig_modes |= rig->passthresholds() ? 8:0;
 
+#ifdef _DEBUG_FP_
+
+    if(debug_fp)
+        fclose(debug_fp);
+
+    debug_fp = fopen("sat-az-el-speed.txt", "w");
+    if(!debug_fp)
+        qDebug("failed to create debug file ~/sat-az-el-speed.txt...");
+
+#else
+
+    debug_fp = NULL;
+
+#endif
+
     sat = tw->getSatellite();
+
+    if(sat && debug_fp)
+        fprintf(debug_fp,"%s max elevation:%.2f\n\n", sat->name, sat->sat_max_ele);
+
     while(!(flags & TF_STOP)) {
 
         now = QDateTime::currentDateTime();                
@@ -179,14 +211,8 @@ void TrackThread::run()
 
                 // init rotor
                 if((rig_modes & 1) && !(rig_modes & 32)) {
-                    if(!sat->CanRecord()) {
-                        if(rig_modes & 2)
-                            rig->rotor->park();
-
-                        rig_modes |= 32 | 64; // do nothing
-                    }
                     // antenna parking
-                    else if(rig_modes & 2) {
+                    if(rig_modes & 2) {
                         // park antenna if the satellite is >15 min from AOS time
                         v1 = (rig_modes & 8) ? sat->rec_aostime:sat->aostime;
                         v2 = (v1 - sat->daynum) * 1440;
@@ -205,12 +231,16 @@ void TrackThread::run()
                     else
                         rig_modes |= 32;
 
-                    if((rig_modes & 32) && !(rig_modes & 64))
+                    if(rig_modes & 32)
                         initRotor(rig, sat);
                 }
 
                 // everything should now be inited, wait for it to rise
                 sat_state = sat->sat_ele > 0 ? 1:0;
+
+                prev_el = sat->sat_ele;
+                prev_az = sat->sat_azi;
+                speed_dt = QDateTime::currentDateTime();
             }
             break;
 
@@ -218,7 +248,7 @@ void TrackThread::run()
             {
                 // swing the dish
                 if(rig_modes & 1)
-                    rig->rotor->moveTo(sat->sat_azi, sat->sat_ele);
+                    moveTo(sat->sat_azi, sat->sat_ele);
 
                 // start the rx script
                 if((rig_modes & 128) && !(rig_modes & 512) && sat->CanStartRecording(rig)) {
@@ -249,12 +279,15 @@ void TrackThread::run()
 
                 // satellite is receding, start checking if a new state can be set
                 if(v1 > 0) {
-                    if(sat->sat_ele <= 0)
+                    if((rig_modes & 8) && sat->CanStopRecording())
                         sat_state = 2;
-                    else {
-                        if((rig_modes & 8) && sat->CanStopRecording())
-                            sat_state = 2;
-                    }
+
+                    v2 = 0;
+                    if(rig_modes & 1)
+                        v2 = (rig->rotor->flags & R_ROTOR_CCW) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
+
+                    if(sat->sat_ele <= v2)
+                        sat_state = 2;
                 }
 
             }
@@ -319,7 +352,12 @@ void TrackThread::run()
 
         case 3: // idle state, wait for satellite to reced below qth horizon
             {
-                sat_state = sat->sat_ele > 0 ? 3:4;
+                v1 = 0;
+
+                if(rig_modes & 1)
+                    v1 = (rig->rotor->flags & R_ROTOR_CCW) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
+
+                sat_state = sat->sat_ele > v1 ? 3:4;
             }
             break;
 
@@ -333,6 +371,11 @@ void TrackThread::run()
 
                 // delete all bits except the static ones (1 | 2 | 4 | 8)
                 rig_modes &= ~0xFFFFFFF0;
+
+                if(sat && debug_fp)
+                    fprintf(debug_fp,"\n\n%s max elevation:%.2f\n\n", sat->name, sat->sat_max_ele);
+
+
             }
             break;
 
@@ -384,6 +427,11 @@ void TrackThread::run()
     // let the post rx script run
     stopProcess(rx_proc);
 
+    if(debug_fp)
+        fclose(debug_fp);
+
+    debug_fp = NULL;
+
   exit();
 }
 
@@ -412,56 +460,89 @@ bool TrackThread::procRunning(QProcess *proc)
 //---------------------------------------------------------------------------
 void TrackThread::initRotor(TRig *rig, TSat *sat)
 {
-    double aos_az, los_az, sat_ele;
-    int    *rotor_flags_ptr;
+    double aos_az, los_az, aos_el, sat_az, sat_el;
+    double el;
 
-    sat_ele = sat->sat_ele;
+    qDebug("init rotor: %s", sat->name);
 
-    if(sat_ele >= 0)
-        aos_az = sat->sat_azi;
-    else {
-        sat->daynum = rig->passthresholds() ? sat->rec_aostime:sat->aostime;
-        sat->Calc();
-        aos_az = sat->sat_azi;
-    }
+    // current satellite position
+    sat_az = sat->sat_azi;
+    sat_el = sat->sat_ele;
 
-    if(rig->rotor->rotor_type == RotorType_GS232B)
-        rotor_flags_ptr = &rig->rotor->gs232b->flags;
-    else if(rig->rotor->rotor_type == RotorType_SPID)
-        rotor_flags_ptr = &rig->rotor->spid->flags;
-    else if(rig->rotor->rotor_type == RotorType_JRK)
-        rotor_flags_ptr = &rig->rotor->jrk->flags;
-    else
-        rotor_flags_ptr = NULL;
+    rig->rotor->readPosition();
 
-    if(rotor_flags_ptr) {
-        *rotor_flags_ptr &= ~R_ROTOR_CCW;
+    // AOS satellite position
+    sat->daynum = rig->passthresholds() ? sat->rec_aostime:sat->aostime;
+    sat->Calc();
+    aos_az = sat->sat_azi;
+    aos_el = sat->sat_ele;
 
-        if(rig->rotor->el_max > 90) {
-            // the dish can be turned upside down
-            sat->daynum = rig->passthresholds() ? sat->rec_lostime:sat->lostime;
-            sat->Calc();
-            los_az = sat->sat_azi;
+    // LOS satellite position
+    sat->daynum = rig->passthresholds() ? sat->rec_lostime:sat->lostime;
+    sat->Calc();
+    los_az = sat->sat_azi;
 
-            // check if it crosses the pole
-            if(fabs(aos_az - los_az) > 185)
-                *rotor_flags_ptr |= R_ROTOR_CCW;
-        }
+    rig->rotor->setCCWFlag(aos_az, los_az);
 
-    }
-
-    // try to prevent Jrk error: Maximum current exceeded when moving a long distance
-    if(rig->rotor->rotor_type == RotorType_JRK) {
+    // try to prevent Jrk from latching error: Maximum current exceeded, when moving a long distance
+    if(rig->rotor->rotor_type == RotorType_JRK)
         rig->rotor->jrk->start();
 
-        // move it forward or backward some just to (try to) get rid of the current peak
-        rig->rotor->jrk->moveAxisSome(true, aos_az > rig->rotor->getAzimuth() ? 100:-100);
+    // calculate AOS satellite position at rotor limit
+    el = rig->rotor->isCCW() ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
+
+    if(sat_el < el) {
+        if(sat->FindAOSElevation(el)) {
+            sat_el = sat->sat_ele;
+            sat_az = sat->sat_azi;
+        }
     }
 
-
-    rig->rotor->moveTo(aos_az, sat_ele < 0 ? rig->rotor->el_min:sat_ele);
+    rig->rotor->moveTo(sat_az, sat_el);
 
     sat->Track();
+}
+
+//---------------------------------------------------------------------------
+void TrackThread::moveTo(double az, double el)
+{
+    if(!rig->rotor->moveTo(az, el))
+        return;
+
+#ifdef _DEBUG_FP_
+    if(el < 60 || !debug_fp)
+        return;
+
+    // calculate azimuth and elevation angular speed
+    QDateTime dt = QDateTime::currentDateTime();
+    double del = fabs(el - prev_el);
+    double daz = fabs(az - prev_az);
+    double dtime = fabs(speed_dt.time().msecsTo(dt.time()));
+    double sel, saz;
+    QString str;
+
+    if(dtime > 0) {
+        // check if it crossed the 0 -> 360 meridian
+        if(daz > 300)
+            daz = 360.0 - daz;
+
+        sel = 1000.0 * del / dtime;
+        saz = 1000.0 * daz / dtime;
+
+        if(sel == 0 && saz == 0)
+            return;
+
+        str.sprintf("Elevation @ %.3f speed: %.3f deg/sec Azimuth @ %.03f speed: %.3f deg/sec", el, sel, az, saz);
+
+        qDebug("%s", str.toStdString().c_str());
+        fprintf(debug_fp, "%s\n", str.toStdString().c_str());
+    }
+
+#endif
+
+    prev_el = el;
+    prev_az = az;
+    speed_dt = dt;
 }
 
 //---------------------------------------------------------------------------

@@ -284,25 +284,6 @@ bool TAlphaSpid::moveTo(double az, double el)
     if(rotate_next > QDateTime::currentDateTime())
         return false;
 
-/*  temporarily disabled
-    if(flags & R_ROTOR_CCW) {
-        el = 180.0 - el;
-        az = az + 180.0;
-
-        if(az > 360)
-            az -= 360.0;
-        if(az < 0)
-            az = 0;
-
-        if(el > 180)
-            el = 180;
-        if(el < 0)
-            el = 0;
-
-        qDebug("Move to *CCW* Az: %.2f El: %.2f", az, el);
-    }
-*/
-
     // check if satellite moved enough
     d_az = fabs(current_az - az);
     d_el = fabs(current_el - el);
