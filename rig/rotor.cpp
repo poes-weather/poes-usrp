@@ -309,10 +309,10 @@ double TRotor::AzToCCW(double az_)
     if(flags & R_ROTOR_CCW)
         az_ = az_ + 180.0;
 
-    if(az > 360)
-        az -= 360.0;
-    if(az < 0)
-        az += 360.0;
+    if(az_ > 360)
+        az_ -= 360.0;
+    if(az_ < 0)
+        az_ += 360.0;
 
     az = ClipValue(az_, az_max, az_min);
 
