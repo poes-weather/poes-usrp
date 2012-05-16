@@ -476,6 +476,7 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
     sat->Calc();
     aos_az = sat->sat_azi;
     aos_el = sat->sat_ele;
+    qDebug("init rotor: AOS Az: %.3f El: %.03f", aos_az, aos_el);
 
     // LOS satellite position
     sat->daynum = rig->passthresholds() ? sat->rec_lostime:sat->lostime;
@@ -498,7 +499,6 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
         }
     }
 
-    qDebug("init rotor: AOS Az: %.3f El: %.03f", aos_az, aos_el);
     qDebug("init rotor: move to Az: %.3f El: %.03f", sat_az, sat_el);
 
     rig->rotor->moveTo(sat_az, sat_el);

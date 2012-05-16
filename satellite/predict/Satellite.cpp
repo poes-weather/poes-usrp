@@ -1506,11 +1506,11 @@ double TSat::FindAOSElevation(double elevation)
  double elev, _elevation;
  int    iter = 0;
 
-  if(elevation == 0.0)
-     return aostime;
-
   daynum = aostime;
   Calc();
+
+  if(elevation == 0.0)
+      return aostime;
 
   _elevation = elevation-0.03;
   while(iter < 1800) { // iterate max 30 min
