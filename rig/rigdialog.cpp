@@ -200,8 +200,7 @@ void RigDialog::enableControls(void)
     m_ui->checkBoxElCCW->setEnabled(enb);
     m_ui->checkBoxAzCCW->setEnabled(enb);
 
-    if(rig->rotor->rotor_type == RotorType_Stepper ||
-       rig->rotor->rotor_type == RotorType_JRK)
+    if(rig->rotor->rotor_type == RotorType_Stepper)
         m_ui->rotorZeroPosBtn->setEnabled(true);
     else
         m_ui->rotorZeroPosBtn->setEnabled(false);
@@ -257,7 +256,7 @@ void RigDialog::on_buttonBox_accepted()
 //---------------------------------------------------------------------------
 void RigDialog::on_buttonBox_rejected()
 {
-    rig->rotor->rig->rotor->enable(rotorEnabled);
+    rig->rotor->enable(rotorEnabled);
 }
 
 //---------------------------------------------------------------------------
