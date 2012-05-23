@@ -34,7 +34,7 @@
 #include "rig.h"
 
 #define _DEBUG_FP_
-const int  TRACKER_SPEED = 100; // milliseconds
+const int  TRACKER_SPEED = 500; // milliseconds
 
 //---------------------------------------------------------------------------
 TrackThread::TrackThread(QObject *parent) : QThread(parent)
