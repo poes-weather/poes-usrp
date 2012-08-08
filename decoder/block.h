@@ -107,7 +107,10 @@ class TBlock
 
     void gotoStart(void);
     void setLittleEndian(bool on);
-    bool isLittleEndian(void) { return Modes&B_BYTESWAP ? true:false; }
+    bool isLittleEndian(void) { return Modes & B_BYTESWAP ? true:false; }
+
+    void syncFound(bool yes);
+    bool syncFound(void) { return Modes & B_SYNC_FOUND ? true:false; }
 
     long int countCADUFrames(long int block_size);
     bool findCADUFrameSync(void);

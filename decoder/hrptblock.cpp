@@ -1,6 +1,6 @@
 /*
     POES-Decoder, a software for processing POES high resolution weather satellite images.
-    Copyright (C) 2009 Free Software Foundation, Inc.
+    Copyright (C) 2009-2012 Free Software Foundation, Inc.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -62,8 +62,6 @@ static const quint16 HRPT_SYNC[HRPT_SYNC_SIZE] = {
 THRPT::THRPT(TBlock *_block)
 {
   block = _block;
-
-  sync_found = false;
 
   datatype = UNPACKED16BIT;
   scanLine = NULL;
@@ -133,8 +131,8 @@ int THRPT::countFrames(void)
 
   syncSize = HRPT_SYNC_SIZE << 1; // 12 bytes
   firstFrameSyncPos = -1;
+  block->syncFound(false);
   frames = 0;
-  sync_found = false;
 
   while(findFrameSync()) {
      // we just read 6 words, HRPT_SYNC_SIZE
@@ -147,7 +145,7 @@ int THRPT::countFrames(void)
      if(fseek(fp, (HRPT_BLOCK_SIZE << 1) - syncSize, SEEK_CUR) != 0)
         break;
 
-     sync_found = true;
+     block->syncFound(true);
   }
 
   block->setFrames(frames);
@@ -159,43 +157,37 @@ int THRPT::countFrames(void)
 //---------------------------------------------------------------------------
 bool THRPT::findFrameSync(void)
 {
- quint8  ch[2];
- quint16 w;
- int i;
+    quint8  ch[2];
+    quint16 w;
+    int i;
 
-#if 0
-
- // flush the sync and continue
- if(sync_found) {
-     i = 0;
-     while(fread(ch, sizeof(ch), 1, fp) == 1) {
-         i++;
-
-         if(i == HRPT_SYNC_SIZE)
-            return true;
-     }
-
-     return false;
-
- }
-
-#endif
-
-  i = 0;
-  while(fread(ch, sizeof(ch), 1, fp) == 1) {
-     if(block->isLittleEndian())
-        w = (ch[1] << 8) | ch[0];
-     else
-        w = (ch[0] << 8) | ch[1];
-        
-     if(w == HRPT_SYNC[i])
-        i++;
-     else
+    if(block->satprop->syncCheck()) {
         i = 0;
+        while(fread(ch, sizeof(ch), 1, fp) == 1) {
+           if(block->isLittleEndian())
+              w = (ch[1] << 8) | ch[0];
+           else
+              w = (ch[0] << 8) | ch[1];
 
-     if(i == HRPT_SYNC_SIZE)
-        return true;
-  }
+           if(w == HRPT_SYNC[i])
+              i++;
+           else
+              i = 0;
+
+           if(i == HRPT_SYNC_SIZE)
+              return true;
+        }
+    }
+    else {
+        // no sync check, flush the sync
+        i = 0;
+        while(fread(ch, sizeof(ch), 1, fp) == 1) {
+            i++;
+
+            if(i == HRPT_SYNC_SIZE)
+               return true;
+        }
+    }
 
  return false;
 }

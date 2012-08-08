@@ -97,6 +97,8 @@ RigDialog::RigDialog(QWidget *parent) :
     m_ui->wobbleCb->setChecked(rig->rotor->wobbleEnable());
     m_ui->wobbleradiusSb->setValue(rig->rotor->wobble_radius);
 
+    m_ui->zenithCb->setChecked(rig->rotor->turnElOnlyWhenZenith());
+
 
     // control
 #if 1
@@ -588,6 +590,8 @@ void RigDialog::applyRotorSettings(void)
         m_ui->az_spinBox->setSingleStep(1);
         m_ui->el_spinBox->setSingleStep(1);
     }
+
+    rig->rotor->turnElOnlyWhenZenith(m_ui->zenithCb->isChecked());
 }
 
 //---------------------------------------------------------------------------

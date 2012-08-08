@@ -1,6 +1,6 @@
 /*
     POES-USRP, a software for recording and decoding POES high resolution weather satellite images.
-    Copyright (C) 2009-2011 Free Software Foundation, Inc.
+    Copyright (C) 2009-2012 Free Software Foundation, Inc.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -377,6 +377,18 @@ void TSatProp::rs_decode(bool yes)
 bool TSatProp::rs_decode(void)
 {
     return flagState(&_decoderFlags, DF_RSDECODE);
+}
+
+//---------------------------------------------------------------------------
+void TSatProp::syncCheck(bool yes)
+{
+    flagState(&_decoderFlags, DF_SYNCCHECK, yes);
+}
+
+//---------------------------------------------------------------------------
+bool TSatProp::syncCheck(void)
+{
+    return flagState(&_decoderFlags, DF_SYNCCHECK);
 }
 
 //---------------------------------------------------------------------------

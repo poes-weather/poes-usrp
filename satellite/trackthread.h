@@ -76,7 +76,7 @@ private:
     QLabel *satLabel, *timeLabel, *sunLabel, *moonLabel;
 
     QDateTime speed_dt;
-    double prev_el, prev_az;
+    double prev_el, prev_az, sat_aos_azi;
     FILE *debug_fp;
 
     int flags;

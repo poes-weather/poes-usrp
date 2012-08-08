@@ -1,6 +1,6 @@
 /*
     POES-USRP, a software for recording and decoding POES high resolution weather satellite images.
-    Copyright (C) 2009-2011 Free Software Foundation, Inc.
+    Copyright (C) 2009-2012 Free Software Foundation, Inc.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 // decoder bitmap
 #define DF_DERANDOMIZE  1
 #define DF_RSDECODE     2
+#define DF_SYNCCHECK    4
 
 
 class QSettings;
@@ -61,9 +62,10 @@ public:
 
     void derandomize(bool yes);
     bool derandomize(void);
-
     void rs_decode(bool yes);
     bool rs_decode(void);
+    void syncCheck(bool yes);
+    bool syncCheck(void);
 
     // general functions
     void check(int max_ch);

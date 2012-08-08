@@ -84,7 +84,7 @@ void TRotor::writeSettings(QSettings *reg)
 {
     reg->beginGroup("Rotor");
 
-      flags &= ~R_ROTOR_CCW;
+      flags &= ~(R_ROTOR_CCW | R_ROTOR_ZENITH_PASS);
 
       reg->setValue("Flags", (int) flags);
       reg->setValue("Type", (int) rotor_type);
@@ -274,17 +274,32 @@ void TRotor::park(void)
 }
 
 //---------------------------------------------------------------------------
-void TRotor::setCCWFlag(double aos_az, double los_az)
+void TRotor::turnElOnlyWhenZenith(bool enable)
+{
+    flags &= ~R_ROTOR_TURN_EL_ONLY_WHEN_ZENITH;
+
+    if(enable && el_max > 95 && !isXY())
+        flags |= R_ROTOR_TURN_EL_ONLY_WHEN_ZENITH;
+}
+
+//---------------------------------------------------------------------------
+void TRotor::setCCWFlag(double aos_az, double los_az, double sat_max_el)
 {
     double delta = fabs(aos_az - los_az);
 
-    flags &= ~R_ROTOR_CCW;
+    flags &= ~(R_ROTOR_CCW | R_ROTOR_ZENITH_PASS);
 
-    // check if it will cross the north pole 0 <- 360 meridian counter clock wise
-    if(!isXY() && el_max > 90 && delta > 185) {
-        flags |= R_ROTOR_CCW;
+    if(turnElOnlyWhenZenith() && sat_max_el > 87) {
+        // we'll point at aos_azi and turn elevation only
+        flags |= R_ROTOR_ZENITH_PASS;
+    }
+    else {
+        // check if it will cross the north pole 0 <- 360 meridian counter clock wise
+        if(!isXY() && el_max > 90 && delta > 185) {
+            flags |= R_ROTOR_CCW;
 
-        qDebug("rotor CCW flag set: 180 - elevation, 180 + azimuth");
+            qDebug("rotor CCW flag set: 180 - elevation, 180 + azimuth");
+        }
     }
 }
 

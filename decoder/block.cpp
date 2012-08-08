@@ -169,6 +169,12 @@ void TBlock::setLittleEndian(bool on)
 }
 
 //---------------------------------------------------------------------------
+void TBlock::syncFound(bool yes)
+{
+    setMode(yes, B_SYNC_FOUND);
+}
+
+//---------------------------------------------------------------------------
 bool TBlock::setBlockType(Block_Type type)
 {    
    freeBlock();
@@ -176,6 +182,7 @@ bool TBlock::setBlockType(Block_Type type)
    cadu->reset();
    cadu->derandomize(satprop->derandomize());
    cadu->reed_solomon(satprop->rs_decode());
+   syncFound(false);
 
    switch(type)
    {

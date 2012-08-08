@@ -33,7 +33,7 @@
 #include "Satellite.h"
 #include "rig.h"
 
-#define _DEBUG_FP_
+// #define _DEBUG_FP_
 const int  TRACKER_SPEED = 500; // milliseconds
 
 //---------------------------------------------------------------------------
@@ -105,6 +105,7 @@ void TrackThread::run()
 {
     int          sat_state; // 0 = init, 1 = tracking, 2 = LOS, 3 = idle, 4 = reinit
     unsigned int rig_modes, loop_index;
+    double       r_az, r_el;
 
     /*
 
@@ -247,9 +248,24 @@ void TrackThread::run()
 
         case 1: // satellite tracking- and second init state
             {
-                // swing the dish
-                if(rig_modes & 1)
-                    moveTo(sat->sat_azi, sat->sat_ele);
+                v1 = sat->get_range_rate();
+
+                r_az = sat->sat_azi;
+                r_el = sat->sat_ele;
+
+                // swing the antenna
+                if(rig_modes & 1) {
+                    // turn elevation only on zenith pass
+                    if(rig->rotor->isZenithPass()) {
+                        r_az = sat_aos_azi;
+
+                        if(v1 > 0) // receding
+                            r_el = 180.0 - sat->sat_ele;
+                    }
+
+                    moveTo(r_az, r_el);
+                    // moveTo(sat->sat_azi, sat->sat_ele);
+                }
 
                 // start the rx script
                 if((rig_modes & 128) && !(rig_modes & 512) && sat->CanStartRecording(rig)) {
@@ -276,8 +292,6 @@ void TrackThread::run()
                 }
 
 
-                v1 = sat->get_range_rate();
-
                 // satellite is receding, start checking if a new state can be set
                 if(v1 > 0) {
                     if((rig_modes & 8) && sat->CanStopRecording())
@@ -285,7 +299,7 @@ void TrackThread::run()
 
                     v2 = 0;
                     if(rig_modes & 1)
-                        v2 = (rig->rotor->flags & R_ROTOR_CCW) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
+                        v2 = (rig->rotor->isCCW() || rig->rotor->isZenithPass()) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
 
                     if(sat->sat_ele <= v2)
                         sat_state = 2;
@@ -356,7 +370,7 @@ void TrackThread::run()
                 v1 = 0;
 
                 if(rig_modes & 1)
-                    v1 = (rig->rotor->flags & R_ROTOR_CCW) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
+                    v1 = (rig->rotor->isCCW() || rig->rotor->isZenithPass()) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
 
                 sat_state = sat->sat_ele > v1 ? 3:4;
             }
@@ -479,12 +493,14 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
     aos_el = sat->sat_ele;
     qDebug("init rotor: AOS Az: %.3f El: %.03f", aos_az, aos_el);
 
+    sat_aos_azi = aos_az;
+
     // LOS satellite position
     sat->daynum = rig->passthresholds() ? sat->rec_lostime:sat->lostime;
     sat->Calc();
     los_az = sat->sat_azi;
 
-    rig->rotor->setCCWFlag(aos_az, los_az);
+    rig->rotor->setCCWFlag(aos_az, los_az, sat->sat_max_ele);
 
     // try to prevent Jrk from latching error: Maximum current exceeded, when moving a long distance
     if(rig->rotor->rotor_type == RotorType_JRK)
@@ -542,11 +558,11 @@ void TrackThread::moveTo(double az, double el)
         fprintf(debug_fp, "%s\n", str.toStdString().c_str());
     }
 
+    speed_dt = dt;
 #endif
 
     prev_el = el;
     prev_az = az;
-    speed_dt = dt;
 }
 
 //---------------------------------------------------------------------------

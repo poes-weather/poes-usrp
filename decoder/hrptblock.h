@@ -40,7 +40,7 @@ typedef enum HRPT_DataType_t
 {
   UNPACKED16BIT,
   UNPACKED8BIT,
-  PACKED10BIT,
+  PACKED10BIT
 } HRPT_DataType;
 
 //---------------------------------------------------------------------------
@@ -73,9 +73,7 @@ class THRPT
 
  protected:
     bool check(int flags=0);
-
     bool findFrameSync(void);
-    bool sync_found;
 
  private:
     TBlock  *block;

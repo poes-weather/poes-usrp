@@ -32,6 +32,9 @@
 #define R_ROTOR_PARK              64       // parking is enabled
 #define R_ROTOR_WOBBLE           128       // conical scan
 #define R_ROTOR_XY_TYPE          512
+#define R_ROTOR_TURN_EL_ONLY_WHEN_ZENITH     1024       // turn elevation axis only on zenith pass
+#define R_ROTOR_ZENITH_PASS                  2048       // tracking a zenith pass
+
 //---------------------------------------------------------------------------
 
 
@@ -113,7 +116,7 @@ public:
     void AzEltoXY(double az, double el, double *x, double *y);
     void XYtoAzEl(double X, double Y, double *az, double *el);
 
-    void setCCWFlag(double aos_az, double los_az);
+    void setCCWFlag(double aos_az, double los_az, double sat_maz_el);
     bool isCCW(void);
 
 
@@ -140,6 +143,10 @@ public:
     void wobbleEnable(bool enable);
     bool wobbleEnable(void) { return ((flags & R_ROTOR_WOBBLE) ? true:false); }
     void wobble(void);
+
+    void turnElOnlyWhenZenith(bool enable);
+    bool turnElOnlyWhenZenith(void) { return ((flags & R_ROTOR_TURN_EL_ONLY_WHEN_ZENITH) ? true:false); }
+    bool isZenithPass(void) { return ((flags & R_ROTOR_ZENITH_PASS) ? true:false); }
 
     bool readPosition(void);
     unsigned long getRotationTime(double toAz, double toEl);

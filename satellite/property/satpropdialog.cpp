@@ -153,6 +153,7 @@ void SatPropDialog::on_satlistWidget_itemClicked(QListWidgetItem* item)
     // Decoder
     ui->derandCb->setChecked(selsat->sat_props->derandomize());
     ui->rsdecodeCb->setChecked(selsat->sat_props->rs_decode());
+    ui->syncCheckCb->setChecked(selsat->sat_props->syncCheck());
 }
 //---------------------------------------------------------------------------
 //
@@ -506,6 +507,7 @@ void SatPropDialog::on_applyDecoderBtn_clicked()
 
         sat->sat_props->derandomize(ui->derandCb->isChecked());
         sat->sat_props->rs_decode(ui->rsdecodeCb->isChecked());
+        sat->sat_props->syncCheck(ui->syncCheckCb->isChecked());
     }
 }
 

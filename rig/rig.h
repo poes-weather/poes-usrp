@@ -37,7 +37,7 @@
 typedef enum PassThresholdType_t
 {
     AOS_LOS = 0,                           // thresholds defined by AOS and LOS elevation
-    North_South,                           // thresholds defined by North and South elevation
+    North_South                            // thresholds defined by North and South elevation
 } PassThresholdType_t;
 
 #define R_USRP_REC_ENABLE             1       // execute usrp and record automatically
