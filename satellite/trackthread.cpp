@@ -255,6 +255,7 @@ void TrackThread::run()
 
                 // swing the antenna
                 if(rig_modes & 1) {
+#if 0
                     // turn elevation only on zenith pass
                     if(rig->rotor->isZenithPass()) {
                         r_az = sat_aos_azi;
@@ -262,6 +263,7 @@ void TrackThread::run()
                         if(v1 > 0) // receding
                             r_el = 180.0 - sat->sat_ele;
                     }
+#endif
 
                     moveTo(r_az, r_el);
                     // moveTo(sat->sat_azi, sat->sat_ele);

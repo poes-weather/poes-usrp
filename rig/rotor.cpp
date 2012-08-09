@@ -289,6 +289,7 @@ void TRotor::setCCWFlag(double aos_az, double los_az, double sat_max_el)
 
     flags &= ~(R_ROTOR_CCW | R_ROTOR_ZENITH_PASS);
 
+#if 0
     if(turnElOnlyWhenZenith() && sat_max_el > 87) {
         // we'll point at aos_azi and turn elevation only
         flags |= R_ROTOR_ZENITH_PASS;
@@ -301,6 +302,14 @@ void TRotor::setCCWFlag(double aos_az, double los_az, double sat_max_el)
             qDebug("rotor CCW flag set: 180 - elevation, 180 + azimuth");
         }
     }
+#else
+    // check if it will cross the north pole 0 <- 360 meridian counter clock wise
+    if(!isXY() && el_max > 90 && delta > 185) {
+        flags |= R_ROTOR_CCW;
+
+        qDebug("rotor CCW flag set: 180 - elevation, 180 + azimuth");
+    }
+#endif
 }
 
 //---------------------------------------------------------------------------
