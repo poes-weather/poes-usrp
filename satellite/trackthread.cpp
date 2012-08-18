@@ -33,7 +33,7 @@
 #include "Satellite.h"
 #include "rig.h"
 
-// #define _DEBUG_FP_
+// #define _DEBUG_FP_ /* todo: remove this when not debugging */
 const int  TRACKER_SPEED = 500; // milliseconds
 
 //---------------------------------------------------------------------------
@@ -160,7 +160,7 @@ void TrackThread::run()
 
     debug_fp = fopen("sat-az-el-speed.txt", "w");
     if(!debug_fp)
-        qDebug("failed to create debug file ~/sat-az-el-speed.txt...");
+        qDebug("failed to create debug file sat-az-el-speed.txt...");
 
 #else
 
@@ -255,19 +255,26 @@ void TrackThread::run()
 
                 // swing the antenna
                 if(rig_modes & 1) {
-#if 0
-                    // turn elevation only on zenith pass
+#if 1
+                    // turn elevation >90 degrees on zenith pass
                     if(rig->rotor->isZenithPass()) {
-                        r_az = sat_aos_azi;
-
-                        if(v1 > 0) // receding
+                        if(v1 >= 0.0) { // receding
                             r_el = 180.0 - sat->sat_ele;
+                            r_az = sat->sat_azi - 180.0;
+
+                            if(r_az < 0)
+                                r_az += 360.0;
+
+                            if(r_az > 360)
+                                r_az -= 360.0;
+                        }
                     }
 #endif
 
                     moveTo(r_az, r_el);
-                    // moveTo(sat->sat_azi, sat->sat_ele);
                 }
+
+                //moveTo(r_az, r_el); // todo: remove this when not debugging
 
                 // start the rx script
                 if((rig_modes & 128) && !(rig_modes & 512) && sat->CanStartRecording(rig)) {
@@ -528,8 +535,10 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
 //---------------------------------------------------------------------------
 void TrackThread::moveTo(double az, double el)
 {
+#if 1 // todo: enable this when not debugging
     if(!rig->rotor->moveTo(az, el))
         return;
+#endif
 
 #ifdef _DEBUG_FP_
     if(el < 60 || !debug_fp)
@@ -554,7 +563,7 @@ void TrackThread::moveTo(double az, double el)
         if(sel == 0 && saz == 0)
             return;
 
-        str.sprintf("Elevation @ %.3f speed: %.3f deg/sec Azimuth @ %.03f speed: %.3f deg/sec", el, sel, az, saz);
+        str.sprintf("Elevation @ %.3f speed: %.3f deg/sec, Azimuth @ %.03f speed: %.3f deg/sec, satellite range rate %f", el, sel, az, saz, sat->get_range_rate());
 
         qDebug("%s", str.toStdString().c_str());
         fprintf(debug_fp, "%s\n", str.toStdString().c_str());

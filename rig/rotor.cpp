@@ -276,7 +276,7 @@ void TRotor::park(void)
 //---------------------------------------------------------------------------
 void TRotor::turnElOnlyWhenZenith(bool enable)
 {
-    flags &= ~R_ROTOR_TURN_EL_ONLY_WHEN_ZENITH;
+    flags &= ~(R_ROTOR_TURN_EL_ONLY_WHEN_ZENITH | R_ROTOR_ZENITH_PASS);
 
     if(enable && el_max > 95 && !isXY())
         flags |= R_ROTOR_TURN_EL_ONLY_WHEN_ZENITH;
@@ -289,10 +289,13 @@ void TRotor::setCCWFlag(double aos_az, double los_az, double sat_max_el)
 
     flags &= ~(R_ROTOR_CCW | R_ROTOR_ZENITH_PASS);
 
-#if 0
+#if 1
     if(turnElOnlyWhenZenith() && sat_max_el > 87) {
-        // we'll point at aos_azi and turn elevation only
+        // minimize azimuth turning and turn elevation 180
+        // recalculation of azimuth and elevation is done in the track-thread
         flags |= R_ROTOR_ZENITH_PASS;
+
+        qDebug("rotor ZENITH_PASS flag set: turn elevation downto max elevation and less in azimuth");
     }
     else {
         // check if it will cross the north pole 0 <- 360 meridian counter clock wise
