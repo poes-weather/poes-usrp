@@ -485,7 +485,7 @@ bool TrackThread::procRunning(QProcess *proc)
 void TrackThread::initRotor(TRig *rig, TSat *sat)
 {
     double aos_az, los_az, aos_el, sat_az, sat_el;
-    double el;
+    double el, v;
 
     qDebug("init rotor: %s", sat->name);
 
@@ -493,6 +493,7 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
     sat_az = sat->sat_azi;
     sat_el = sat->sat_ele;
 
+    // TODO: rotor status should be checked here, is the connection still valid, USB disconnected, etc?
     rig->rotor->readPosition();
 
     // AOS satellite position
@@ -508,6 +509,12 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
     sat->daynum = rig->passthresholds() ? sat->rec_lostime:sat->lostime;
     sat->Calc();
     los_az = sat->sat_azi;
+
+    v = sat->get_range_rate();
+    if(sat_el > 0  && v > 0 && rig->passthresholds()) {
+        if(sat_el <= rig->rotor->el_min)
+            return; // wait for next pass, it will happen soon
+    }
 
     rig->rotor->setCCWFlag(aos_az, los_az, sat->sat_max_ele);
 

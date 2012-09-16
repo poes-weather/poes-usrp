@@ -72,7 +72,7 @@ int TUSB::list_devices(u_int16_t vendor)
         for(dev = bus->devices; dev; dev = dev->next) {
             if(dev->descriptor.idVendor == vendor)
             {
-                qDebug ("Device found!");
+                qDebug ("Device %04x found!", vendor);
                 usblist.push_back(new TUSBDevice(dev));
             }
         }
