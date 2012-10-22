@@ -24,6 +24,7 @@
 
 #include "rgbconf.h"
 #include "ndvi.h"
+#include "evi.h"
 
 //---------------------------------------------------------------------------
 // decoder bitmap
@@ -57,6 +58,12 @@ public:
     void  del_ndvi(const QString& name);
     void  add_ndvi_defaults(int mode=0);        
 
+    // EVI settings
+    TEVI  *get_evi(const QString name);
+    void  add_evi(TEVI *evi);
+    void  del_evi(const QString& name);
+    void  add_evi_defaults(int mode=0);
+
     // Decoder options
     unsigned int decoderFlags(void) { return _decoderFlags; }
 
@@ -76,10 +83,12 @@ public:
 
     PList *rgblist;
     PList *ndvilist;
+    PList *evilist;
 
 protected:
     void clear_rgb(void);
     void clear_ndvi(void);
+    void clear_evi(void);
 
     void flagState(unsigned int *flag, unsigned int bitmap, bool on);
     bool flagState(unsigned int *flag, unsigned int bitmap);

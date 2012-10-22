@@ -58,7 +58,9 @@ SOURCES += main.cpp \
     rig/usb/tusb.cpp \
     rig/jrkusb.cpp \
     decoder/fyahrptblock.cpp \
-    rig/jrklut.cpp
+    rig/jrklut.cpp \
+    satellite/property/evi.cpp \
+    satellite/property/eviconfdialog.cpp
 HEADERS += mainwindow.h \
     decoder/hrptblock.h \
     version.h \
@@ -119,7 +121,9 @@ HEADERS += mainwindow.h \
     rig/jrkusb.h \
     rig/jrk_protocol.h \
     decoder/fyahrptblock.h \
-    rig/jrklut.h
+    rig/jrklut.h \
+    satellite/property/evi.h \
+    satellite/property/eviconfdialog.h
 DEFINES += _CRT_SECURE_NO_WARNINGS
 FORMS += mainwindow.ui \
     satellite/station/stationdialog.ui \
@@ -136,7 +140,8 @@ FORMS += mainwindow.ui \
     rig/jrkconfdialog.ui \
     utils/azeldialog.ui \
     tools/cadusplitterdialog.ui \
-    satellite/property/satpropdialog.ui
+    satellite/property/satpropdialog.ui \
+    satellite/property/eviconfdialog.ui
 RESOURCES += application.qrc
 QT += network
 INCLUDEPATH += decoder \

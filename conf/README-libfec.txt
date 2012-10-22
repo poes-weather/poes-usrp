@@ -1,6 +1,17 @@
 libfec-3.0.1 By Phil Karn
 http://www.ka9q.net/code/fec/
 Download: http://www.ka9q.net/code/fec/fec-3.0.1.tar.bz2
+untar the standard fec-3.0.1 package
+
+===========
+x64 systems
+===========
+
+Download and apply the patch
+http://lodge.glasgownet.com/bitsnbobs/kg_fec-3.0.1.patch
+$ patch < kg_fec-3.0.1.patch
+
+Check that the below changes were made
 
 ===========
 makefile.in

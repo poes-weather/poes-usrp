@@ -29,6 +29,8 @@
 #include "satutil.h"
 #include "satprop.h"
 
+#include "eviconfdialog.h"
+
 //---------------------------------------------------------------------------
 SatPropDialog::SatPropDialog(PList *satList, QWidget *parent) :
     QDialog(parent),
@@ -509,6 +511,15 @@ void SatPropDialog::on_applyDecoderBtn_clicked()
         sat->sat_props->rs_decode(ui->rsdecodeCb->isChecked());
         sat->sat_props->syncCheck(ui->syncCheckCb->isChecked());
     }
+}
+
+//---------------------------------------------------------------------------
+void SatPropDialog::on_confEVIBtn_clicked()
+{
+    EVIConfDialog dlg(this);
+
+    dlg.exec();
+
 }
 
 //---------------------------------------------------------------------------

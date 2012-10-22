@@ -32,6 +32,7 @@ TSatProp::TSatProp(void)
 {
     rgblist = new PList;
     ndvilist = new PList;
+    evilist = new PList;
 
     _decoderFlags = 0;
 }
@@ -42,6 +43,7 @@ TSatProp::~TSatProp(void)
     zero();
     delete rgblist;
     delete ndvilist;
+    delete evilist;
 }
 
 //---------------------------------------------------------------------------
@@ -59,6 +61,9 @@ TSatProp& TSatProp::operator = (TSatProp& src)
     for(i=0; i<src.ndvilist->Count; i++)
         ndvilist->Add(new TNDVI(*((TNDVI *) src.ndvilist->ItemAt(i))));
 
+    for(i=0; i<src.evilist->Count; i++)
+        evilist->Add(new TEVI(*((TEVI *) src.evilist->ItemAt(i))));
+
     _decoderFlags = src.decoderFlags();
 
     return *this;
@@ -69,6 +74,7 @@ void TSatProp::zero(void)
 {
     clear_rgb();
     clear_ndvi();
+    clear_evi();
 }
 
 //---------------------------------------------------------------------------
@@ -179,6 +185,8 @@ void TSatProp::check(int max_ch)
         vi->check(max_ch);
     }
 
+    // todo: EVI
+
 }
 
 //---------------------------------------------------------------------------
@@ -243,6 +251,8 @@ void TSatProp::readSettings(QSettings *reg)
 
     reg->endGroup(); // NDVI-Conf
     delete vi;
+
+    // todo: EVI
 }
 
 //---------------------------------------------------------------------------
@@ -287,8 +297,9 @@ void TSatProp::writeSettings(QSettings *reg)
 
     reg->endGroup(); // NDVI-Conf
 
-}
+    // todo: EVI
 
+}
 //---------------------------------------------------------------------------
 //
 //              NDVI
@@ -350,6 +361,69 @@ void TSatProp::add_ndvi_defaults(int mode)
     if(mode & 1)
         clear_ndvi();
 }
+
+//---------------------------------------------------------------------------
+//
+//              EVI
+//
+//---------------------------------------------------------------------------
+void TSatProp::clear_evi(void)
+{
+    TEVI *vi;
+
+    while((vi = (TEVI *) evilist->Last())) {
+        evilist->Delete(vi);
+        delete vi;
+    }
+}
+
+//---------------------------------------------------------------------------
+TEVI *TSatProp::get_evi(const QString name)
+{
+    if(name.isEmpty())
+        return NULL;
+
+    TEVI *vi;
+    for(int i=0; i<evilist->Count; i++) {
+        vi = (TEVI *) evilist->ItemAt(i);
+        if(vi->name() == name)
+            return vi;
+    }
+
+    return NULL;
+}
+
+//---------------------------------------------------------------------------
+void TSatProp::add_evi(TEVI *evi)
+{
+    if(evi == NULL)
+        return;
+
+    TEVI *vi = get_evi(evi->name());
+    if(vi)
+        *vi = *evi;
+    else
+        evilist->Add(new TEVI(*evi));
+}
+
+//---------------------------------------------------------------------------
+void TSatProp::del_evi(const QString& name)
+{
+    TEVI *vi = get_evi(name);
+
+    if(vi) {
+        evilist->Delete(vi);
+        delete vi;
+    }
+}
+
+//---------------------------------------------------------------------------
+void TSatProp::add_evi_defaults(int mode)
+{
+    if(mode & 1)
+        clear_evi();
+}
+
 
 //---------------------------------------------------------------------------
 //

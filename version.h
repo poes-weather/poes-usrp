@@ -1,6 +1,6 @@
 /*
     HRPT-Decoder, a software for processing POES high resolution weather satellite images.
-    Copyright (C) 2009-2011 Free Software Foundation, Inc.
+    Copyright (C) 2009-2012 Free Software Foundation, Inc.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VER_FILEVERSION                 1,0,1,10
-#define VER_FILEVERSION_STR             "1.0.1.10-beta\0"
+#define VER_FILEVERSION                 1,0,1,11
+#define VER_FILEVERSION_STR             "1.0.1.11-alpha\0"
 
 #define VER_PRODUCTVERSION              VER_FILEVERSION
 #define VER_PRODUCTVERSION_STR          VER_FILEVERSION_STR

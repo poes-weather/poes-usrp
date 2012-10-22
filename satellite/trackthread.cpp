@@ -104,6 +104,7 @@ void TrackThread::stop(void)
 void TrackThread::run()
 {
     int          sat_state; // 0 = init, 1 = tracking, 2 = LOS, 3 = idle, 4 = reinit
+    int          rotor_state;
     unsigned int rig_modes, loop_index;
     double       r_az, r_el;
 
@@ -132,7 +133,7 @@ void TrackThread::run()
      */
 
 
-    QDateTime  now;
+    QDateTime  now, r_init_dt;
     QString    cl_down = "color:rgb(0, 170, 255);";
     QString    cl_up   = "color:yellow;";
     QString    cl_style, proc_cmd, dt_str;
@@ -142,6 +143,7 @@ void TrackThread::run()
 
     flags = 0;
     sat_state = 0;
+    rotor_state = 0;
     loop_index = 0;
     post_proc_start_time = 0;
 
@@ -213,10 +215,10 @@ void TrackThread::run()
 
                 // init rotor
                 if((rig_modes & 1) && !(rig_modes & 32)) {
+                    v1 = (rig_modes & 8) ? sat->rec_aostime:sat->aostime;
                     // antenna parking
                     if(rig_modes & 2) {
                         // park antenna if the satellite is >15 min from AOS time
-                        v1 = (rig_modes & 8) ? sat->rec_aostime:sat->aostime;
                         v2 = (v1 - sat->daynum) * 1440;
                         if(v2 > 15) {
                             if(!(rig_modes & 64)) {
@@ -233,8 +235,11 @@ void TrackThread::run()
                     else
                         rig_modes |= 32;
 
-                    if(rig_modes & 32)
+                    if(rig_modes & 32) {
                         initRotor(rig, sat);
+                        r_init_dt = QDateTime::currentDateTime();
+                        rotor_state = 1; // assume it is moving now to its new position
+                    }
                 }
 
                 // everything should now be inited, wait for it to rise
@@ -243,6 +248,17 @@ void TrackThread::run()
                 prev_el = sat->sat_ele;
                 prev_az = sat->sat_azi;
                 speed_dt = QDateTime::currentDateTime();
+
+                // unpower motors if we have to wait long for next AOS
+                if(sat_state == 0 && (rig_modes & 32) && rotor_state == 1) {
+                    v2 = (v1 - sat->daynum) * 1440; // minutes until AOS
+
+                    if(v2 > 5 && now.secsTo(r_init_dt) <= -60) {
+                        rig->rotor->stopMotor();
+                        rotor_state = 0;
+                    }
+                }
+
             }
             break;
 
@@ -255,7 +271,6 @@ void TrackThread::run()
 
                 // swing the antenna
                 if(rig_modes & 1) {
-#if 1
                     // turn elevation >90 degrees on zenith pass
                     if(rig->rotor->isZenithPass()) {
                         if(v1 >= 0.0) { // receding
@@ -269,7 +284,6 @@ void TrackThread::run()
                                 r_az -= 360.0;
                         }
                     }
-#endif
 
                     moveTo(r_az, r_el);
                 }

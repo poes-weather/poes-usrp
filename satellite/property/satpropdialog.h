@@ -76,6 +76,8 @@ private slots:
 
     void on_applyDecoderBtn_clicked();
 
+    void on_confEVIBtn_clicked();
+
 private:
     Ui::SatPropDialog *ui;
 
