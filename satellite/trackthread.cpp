@@ -33,7 +33,7 @@
 #include "Satellite.h"
 #include "rig.h"
 
-// #define _DEBUG_FP_ /* todo: remove this when not debugging */
+//#define _DEBUG_FP_ /* todo: remove this when not debugging */
 const int  TRACKER_SPEED = 500; // milliseconds
 
 //---------------------------------------------------------------------------
@@ -249,11 +249,12 @@ void TrackThread::run()
                 prev_az = sat->sat_azi;
                 speed_dt = QDateTime::currentDateTime();
 
-                // unpower motors if we have to wait long for next AOS
+                // power off motors if we have to wait long for next AOS
                 if(sat_state == 0 && (rig_modes & 32) && rotor_state == 1) {
                     v2 = (v1 - sat->daynum) * 1440; // minutes until AOS
 
-                    if(v2 > 5 && now.secsTo(r_init_dt) <= -60) {
+                    // power off motors ?
+                    if(v2 > 1 && now.secsTo(r_init_dt) <= -60) {
                         rig->rotor->stopMotor();
                         rotor_state = 0;
                     }

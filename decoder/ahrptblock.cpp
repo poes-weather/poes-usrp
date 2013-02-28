@@ -133,7 +133,7 @@ long TAHRPT::count_AVHRR_HR_frames(void)
 #ifdef DEBUG_AHRPT
     long errors = 0;
 
-    //cadu->outfp = fopen("/home/patrik/tmp/fy3a-derand.cadu", "wb");
+    cadu->outfp = fopen("/home/poes-weather/Downloads/metop-a-derand.cadu", "wb");
 #endif
 
     fseek(fp, 0, SEEK_SET);

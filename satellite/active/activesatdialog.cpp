@@ -133,6 +133,7 @@ double ActiveSatDialog::downconvert(TSat *sat, int /*mode*/)
 
    freq1 = atof(sat->sat_scripts->downlink().toStdString().c_str());
    freq2 = sat->getDownlinkFreq(mw->getRig());
+   qDebug("freq2: %f", freq2);
 
    if(freq1 != freq2) {
        str.sprintf("-> %g MHz", freq2);

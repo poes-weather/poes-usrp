@@ -23,16 +23,16 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VER_FILEVERSION                 1,0,1,11
-#define VER_FILEVERSION_STR             "1.0.1.11-alpha\0"
+#define VER_FILEVERSION                 1,0,1,12
+#define VER_FILEVERSION_STR             "1.0.1.12-alpha\0"
 
 #define VER_PRODUCTVERSION              VER_FILEVERSION
 #define VER_PRODUCTVERSION_STR          VER_FILEVERSION_STR
 
-#define VER_COMPANYNAME_STR		"poes-weather.com\0"
+#define VER_COMPANYNAME_STR		    "poes-weather.com\0"
 #define VER_FILEDESCRIPTION_STR		"POES-USRP\0"
-#define VER_PRODUCTNAME_STR		VER_FILEDESCRIPTION_STR
-#define VER_SWNAME_STR                  "POES-USRP\0"
+#define VER_PRODUCTNAME_STR		    VER_FILEDESCRIPTION_STR
+#define VER_SWNAME_STR              "POES-USRP\0"
 #define VER_INTERNALNAME_STR		"POES-USRP.exe\0"
 #define VER_ORIGINALFILENAME_STR	"POES-USRP.exe\0"
 #define VER_LEGALCOPYRIGHT_STR		"POES-Weather Ltd, Vasa, Finland 2012 GPLv3\0"

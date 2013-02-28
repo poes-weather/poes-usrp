@@ -156,8 +156,12 @@ double TRig::dcFreq(double downlink)
 {
  double freq = downlink;
 
-    if(downlink >= 7000 && downlink <= 12000) // X band
-        freq = downlink - dc_lo_freq[DC_LO_X_BAND];
+    if(downlink >= 7000 && downlink <= 12000) { // X band
+        if(downlink < dc_lo_freq[DC_LO_X_BAND])
+            freq = dc_lo_freq[DC_LO_X_BAND] - downlink;
+        else
+            freq = downlink - dc_lo_freq[DC_LO_X_BAND];
+    }
     else if(downlink >= 4000 && downlink < 7000) // C band
         freq = downlink - dc_lo_freq[DC_LO_C_BAND];
     else if(downlink >= 2000 && downlink < 4000) // S band

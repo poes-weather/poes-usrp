@@ -840,7 +840,7 @@ TSat *MainWindow::getNextSat(double daynum_)
 {
  TSat   *sat;
  PList  *list;
- double utc_daynum, daynum;
+ double utc_daynum, now_utc_daynum, daynum;
  TSat   *nextsat = NULL;
  int    i, flags, ii, max_ii;
 
@@ -848,10 +848,12 @@ TSat *MainWindow::getNextSat(double daynum_)
         return NULL;
 
     QDateTime utc(QDateTime::currentDateTime().toUTC());
-    utc_daynum = GetStartTime(utc);
+    now_utc_daynum = GetStartTime(utc);
 
     if(daynum_ != 0)
         utc_daynum = daynum_;
+    else
+        utc_daynum = now_utc_daynum;
 
     list = new PList;
     ii = 0;
@@ -864,6 +866,35 @@ TSat *MainWindow::getNextSat(double daynum_)
             if(!sat->isActive() || !sat->CalcAll(utc_daynum))
                 continue;
 
+#if 1
+            flags = 0;
+            // is it currently above qth?
+            if(sat->aostime < utc_daynum && sat->lostime > utc_daynum) {
+                sat->daynum = now_utc_daynum;
+                sat->Calc();
+
+                // is it approaching?
+                if(sat->get_range_rate() < 0)
+                    list->Add(sat);
+                else
+                    flags |= 1;
+            }
+            else if(sat->aostime >= utc_daynum)
+                list->Add(sat);
+
+
+            if(flags & 1) {
+                // find next orbit pass
+                while(sat->GetNextRiseTime(utc, 1) > 0) {
+                    if(!sat->CalcAll(sat->aostime))
+                        break;
+                    if(sat->aostime >= utc_daynum) {
+                        list->Add(sat);
+                        break;
+                    }
+                }
+            }
+#else
             // is it currently above qth?
             if(sat->aostime < utc_daynum && sat->lostime > utc_daynum)
                 list->Add(sat);
@@ -880,6 +911,7 @@ TSat *MainWindow::getNextSat(double daynum_)
                     }
                 }
             }
+#endif
         }
 
         if(list->Count)
@@ -941,7 +973,8 @@ TSat *MainWindow::getNextSat(double daynum_)
 TSat *MainWindow::getNextSatByName(const QString &name, double daynum_)
 {
  TSat   *sat;
- double utc_daynum;
+ double utc_daynum, now_utc_daynum;
+ int    flags;
 
     if(!countSats(1) || name.isEmpty())
         return NULL;
@@ -951,19 +984,34 @@ TSat *MainWindow::getNextSatByName(const QString &name, double daynum_)
         return NULL;
 
     QDateTime utc(QDateTime::currentDateTime().toUTC());
-    utc_daynum = GetStartTime(utc);
+    now_utc_daynum = GetStartTime(utc);
 
     if(daynum_ != 0)
         utc_daynum = daynum_;
+    else
+        utc_daynum = now_utc_daynum;
 
     if(!sat->CalcAll(utc_daynum))
        return NULL;
 
-    // is it currently above my horizon?
-    if((sat->aostime <= utc_daynum && sat->lostime > utc_daynum) ||
-        sat->aostime >= utc_daynum)
+    flags = 0;
+    if(sat->aostime >= utc_daynum)
         return sat;
-    else {
+    // is it currently above my horizon?
+    if(sat->aostime <= utc_daynum && sat->lostime > utc_daynum) {
+        sat->daynum = now_utc_daynum;
+        sat->Calc();
+
+        // is it approaching?
+        if(sat->get_range_rate() < 0)
+            return sat;
+        else
+            flags |= 1;
+    }
+    else
+        flags |= 1;
+
+    if(flags & 1) {
         while(sat->GetNextRiseTime(utc, 1) > 0) {
            if(!sat->CalcAll(sat->aostime))
               return NULL;
