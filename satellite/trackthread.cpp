@@ -208,6 +208,24 @@ void TrackThread::run()
             }
         }
 
+        if(rig_modes & 1) {
+            if(trackIndex == 1 || trackIndex == 2) {
+                // tracking the sun or moon
+                if(trackIndex == 1) { // sun
+                    r_az = sat->sun_azi;
+                    r_el = sat->sun_ele;
+                }
+                else { // moon
+                    r_az = sat->moon_azi;
+                    r_el = sat->moon_ele;
+                }
+
+            }
+
+            moveTo(r_az, r_el);
+            sat_state = 99;
+        }
+
         switch(sat_state) {
         case 0: // init state, loop here until satellite is at AOS
             {
@@ -244,15 +262,8 @@ void TrackThread::run()
                     }
                 }
 
-                if(rig_modes & 1) {
-                    // dude wants to track the sun or moon
-                    if(trackIndex == 1 || trackIndex == 2)
-                        sat_state = 1;
-                }
-                else {
-                    // everything should now be inited, wait for it to rise
-                    sat_state = sat->sat_ele > 0 ? 1:0;
-                }
+                // everything should now be inited, wait for it to rise
+                sat_state = sat->sat_ele > 0 ? 1:0;
 
                 prev_el = sat->sat_ele;
                 prev_az = sat->sat_azi;
@@ -281,19 +292,7 @@ void TrackThread::run()
 
                 // swing the antenna
                 if(rig_modes & 1) {
-                    if(trackIndex == 1 || trackIndex == 2) {
-                        // tracking the sun or moon
-                        if(trackIndex == 1) { // sun
-                            r_az = sat->sun_azi;
-                            r_el = sat->sun_ele;
-                        }
-                        else { // moon
-                            r_az = sat->moon_azi;
-                            r_el = sat->moon_ele;
-                        }
-
-                    }
-                    else if(rig->rotor->isZenithPass()) {
+                    if(rig->rotor->isZenithPass()) {
                         // turn elevation >90 degrees on zenith pass
                         if(v1 >= 0.0) { // receding
                             r_el = 180.0 - sat->sat_ele;
@@ -416,22 +415,6 @@ void TrackThread::run()
                     v1 = (rig->rotor->isCCW() || rig->rotor->isZenithPass()) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
 
                 sat_state = sat->sat_ele > v1 ? 3:4;
-
-                if(rig_modes & 1) {
-                    if(trackIndex == 1 || trackIndex == 2) {
-                        // tracking the sun or moon
-                        if(trackIndex == 1) { // sun
-                            r_az = sat->sun_azi;
-                            r_el = sat->sun_ele;
-                        }
-                        else { // moon
-                            r_az = sat->moon_azi;
-                            r_el = sat->moon_ele;
-                        }
-
-                        moveTo(r_az, r_el);
-                    }
-                }
             }
             break;
 
