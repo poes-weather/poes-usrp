@@ -220,10 +220,10 @@ void TrackThread::run()
                     r_el = sat->moon_ele;
                 }
 
+                moveTo(r_az, r_el);
+                sat_state = 99;
             }
 
-            moveTo(r_az, r_el);
-            sat_state = 99;
         }
 
         switch(sat_state) {
