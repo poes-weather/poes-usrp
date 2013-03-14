@@ -111,12 +111,21 @@ QLabel *TrackWidget::getMoonLabel(void)
 }
 
 //---------------------------------------------------------------------------
+int TrackWidget::trackIndex(void)
+{
+    return m_ui->satcomboBox->currentIndex();
+}
+
+//---------------------------------------------------------------------------
 TSat *TrackWidget::getNextSatellite(void)
 {
- QString str;
- TSat    *_sat;
+    QString str;
+    TSat    *_sat;
 
-    if(m_ui->satcomboBox->currentIndex() <= 0) // automatic
+    // 0 = Next
+    // 1 = Sun
+    // 2 = Moon
+    if(m_ui->satcomboBox->currentIndex() <= 2)
        _sat = mw->getNextSat(sat ? sat->lostime:0);
     else {
        if(sat && sat->name == m_ui->satcomboBox->currentText())
@@ -208,6 +217,8 @@ void TrackWidget::updateSatCb(void)
 
     m_ui->satcomboBox->clear();
     m_ui->satcomboBox->addItem("Next");
+    m_ui->satcomboBox->addItem("Sun");
+    m_ui->satcomboBox->addItem("Moon");
 
     list = mw->getSatList();
     list2 = new PList;

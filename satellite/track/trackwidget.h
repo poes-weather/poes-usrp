@@ -46,6 +46,7 @@ public:
     QLabel *getTimeLabel(void);
     QLabel *getSunLabel(void);
     QLabel *getMoonLabel(void);
+    int    trackIndex(void);
 
     void updateSatCb(void);
     void restartThread(void);

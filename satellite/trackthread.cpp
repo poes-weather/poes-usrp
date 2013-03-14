@@ -140,6 +140,7 @@ void TrackThread::run()
     bool       script_error;
     // long       l1, l2;
     double     v1, v2, post_proc_start_time;
+    int        trackIndex;
 
     flags = 0;
     sat_state = 0;
@@ -171,6 +172,7 @@ void TrackThread::run()
 #endif
 
     sat = tw->getSatellite();
+    trackIndex = tw->trackIndex();
 
     if(sat && debug_fp)
         fprintf(debug_fp,"%s max elevation:%.2f\n\n", sat->name, sat->sat_max_ele);
@@ -242,8 +244,15 @@ void TrackThread::run()
                     }
                 }
 
-                // everything should now be inited, wait for it to rise
-                sat_state = sat->sat_ele > 0 ? 1:0;
+                if(rig_modes & 1) {
+                    // dude wants to track the sun or moon
+                    if(trackIndex == 1 || trackIndex == 2)
+                        sat_state = 1;
+                }
+                else {
+                    // everything should now be inited, wait for it to rise
+                    sat_state = sat->sat_ele > 0 ? 1:0;
+                }
 
                 prev_el = sat->sat_ele;
                 prev_az = sat->sat_azi;
@@ -272,8 +281,20 @@ void TrackThread::run()
 
                 // swing the antenna
                 if(rig_modes & 1) {
-                    // turn elevation >90 degrees on zenith pass
-                    if(rig->rotor->isZenithPass()) {
+                    if(trackIndex == 1 || trackIndex == 2) {
+                        // tracking the sun or moon
+                        if(trackIndex == 1) { // sun
+                            r_az = sat->sun_azi;
+                            r_el = sat->sun_ele;
+                        }
+                        else { // moon
+                            r_az = sat->moon_azi;
+                            r_el = sat->moon_ele;
+                        }
+
+                    }
+                    else if(rig->rotor->isZenithPass()) {
+                        // turn elevation >90 degrees on zenith pass
                         if(v1 >= 0.0) { // receding
                             r_el = 180.0 - sat->sat_ele;
                             r_az = sat->sat_azi - 180.0;
@@ -288,8 +309,6 @@ void TrackThread::run()
 
                     moveTo(r_az, r_el);
                 }
-
-                //moveTo(r_az, r_el); // todo: remove this when not debugging
 
                 // start the rx script
                 if((rig_modes & 128) && !(rig_modes & 512) && sat->CanStartRecording(rig)) {
@@ -397,6 +416,22 @@ void TrackThread::run()
                     v1 = (rig->rotor->isCCW() || rig->rotor->isZenithPass()) ? (180.0 - rig->rotor->el_max):rig->rotor->el_min;
 
                 sat_state = sat->sat_ele > v1 ? 3:4;
+
+                if(rig_modes & 1) {
+                    if(trackIndex == 1 || trackIndex == 2) {
+                        // tracking the sun or moon
+                        if(trackIndex == 1) { // sun
+                            r_az = sat->sun_azi;
+                            r_el = sat->sun_ele;
+                        }
+                        else { // moon
+                            r_az = sat->moon_azi;
+                            r_el = sat->moon_ele;
+                        }
+
+                        moveTo(r_az, r_el);
+                    }
+                }
             }
             break;
 
@@ -503,6 +538,25 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
     double el, v;
 
     qDebug("init rotor: %s", sat->name);
+
+    rig->rotor->flags &= ~(R_ROTOR_CCW | R_ROTOR_ZENITH_PASS);
+    int i = tw->trackIndex();
+
+    if(i == 1 || i == 2) { // tracking the sun or moon
+        if(i == 1) {
+            qDebug("init: track the sun");
+            sat_az = sat->sun_azi;
+            sat_el = sat->sun_ele;
+        }
+        else {
+            qDebug("init: track the moon");
+            sat_az = sat->moon_azi;
+            sat_el = sat->moon_ele;
+        }
+
+        rig->rotor->moveTo(sat_az, sat_el);
+        return;
+    }
 
     // current satellite position
     sat_az = sat->sat_azi;
