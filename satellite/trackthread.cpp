@@ -209,21 +209,26 @@ void TrackThread::run()
         }
 
         if(rig_modes & 1) {
+            // tracking the sun or moon
             if(trackIndex == 1 || trackIndex == 2) {
-                // tracking the sun or moon
-                if(trackIndex == 1) { // sun
-                    r_az = sat->sun_azi;
-                    r_el = sat->sun_ele;
+                if(!(rig_modes & 32)) {
+                    initRotor(rig, sat);
+                    rig_modes |= 32;
                 }
-                else { // moon
-                    r_az = sat->moon_azi;
-                    r_el = sat->moon_ele;
-                }
+                else {
+                    if(trackIndex == 1) { // sun
+                        r_az = sat->sun_azi;
+                        r_el = sat->sun_ele;
+                    }
+                    else { // moon
+                        r_az = sat->moon_azi;
+                        r_el = sat->moon_ele;
+                    }
 
-                moveTo(r_az, r_el);
-                sat_state = 99;
+                    moveTo(r_az, r_el);
+                    sat_state = 99;
+                }
             }
-
         }
 
         switch(sat_state) {
