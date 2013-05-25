@@ -528,6 +528,15 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
     qDebug("init rotor: %s", sat->name);
 
     rig->rotor->flags &= ~(R_ROTOR_CCW | R_ROTOR_ZENITH_PASS);
+
+    // current satellite position
+    sat_az = sat->sat_azi;
+    sat_el = sat->sat_ele;
+
+    // TODO: rotor status should be checked here, is the connection still valid, USB disconnected, etc?
+    if(rig->rotor->rotor_type == RotorType_JRK)
+       rig->rotor->jrk->check_and_reinit();
+
     int i = tw->trackIndex();
 
     if(i == 1 || i == 2) { // tracking the sun or moon
@@ -546,11 +555,7 @@ void TrackThread::initRotor(TRig *rig, TSat *sat)
         return;
     }
 
-    // current satellite position
-    sat_az = sat->sat_azi;
-    sat_el = sat->sat_ele;
 
-    // TODO: rotor status should be checked here, is the connection still valid, USB disconnected, etc?
     rig->rotor->readPosition();
 
     // AOS satellite position

@@ -133,6 +133,7 @@ void TJRK::check_and_reinit(bool force)
     }
 
     if(reinit) {
+        qDebug("reinit jrk!");
         az_jrk->setDevice(usb->get_device_by_sn(az_sn_));
         el_jrk->setDevice(usb->get_device_by_sn(el_sn_));
 
