@@ -43,6 +43,9 @@ TJRK::TJRK(TRotor *_rotor)
     usb = new TUSB;
     az_jrk = new TJrkUSB;
     el_jrk = new TJrkUSB;
+
+    az_sn_ = "";
+    el_sn_ = "";
 }
 
 //---------------------------------------------------------------------------
@@ -60,11 +63,11 @@ void TJRK::writeSettings(QSettings *reg)
 {
     reg->beginGroup("Jrk");
 
-      reg->setValue("AzDeviceId", az_jrk->serialnumber());
-      reg->setValue("ElDeviceId", el_jrk->serialnumber());
+    reg->setValue("AzDeviceId", az_jrk->serialnumber());
+    reg->setValue("ElDeviceId", el_jrk->serialnumber());
 
-      az_jrk->writeSettings(reg);
-      el_jrk->writeSettings(reg);
+    az_jrk->writeSettings(reg);
+    el_jrk->writeSettings(reg);
 
     reg->endGroup();
 }
@@ -80,8 +83,11 @@ void TJRK::readSettings(QSettings *reg)
 
     reg->beginGroup("Jrk");
 
-    az_jrk->setDevice(usb->get_device_by_sn(reg->value("AzDeviceId", "").toString()));
-    el_jrk->setDevice(usb->get_device_by_sn(reg->value("ElDeviceId", "").toString()));
+    az_sn_ = reg->value("AzDeviceId", "").toString();
+    az_jrk->setDevice(usb->get_device_by_sn(az_sn_));
+
+    el_sn_ = reg->value("ElDeviceId", "").toString();
+    el_jrk->setDevice(usb->get_device_by_sn(el_sn_));
 
     az_jrk->readSettings(reg);
     el_jrk->readSettings(reg);
@@ -89,6 +95,49 @@ void TJRK::readSettings(QSettings *reg)
     reg->endGroup(); // Jrk
 
     open();
+}
+
+
+//---------------------------------------------------------------------------
+// occationally a usb disconnects
+// check and reconnect if possible
+void TJRK::check_and_reinit(bool force)
+{
+    if(rotor->rotor_type != RotorType_JRK)
+        return;
+
+    stop();
+    clearErrors();
+
+    bool reinit = false;
+
+    if(force) {
+        loadDevices();
+        reinit = true;
+    }
+    else {
+        // check only if the connection is valid
+
+        if(az_jrk->isOpen()) {
+            if(!az_jrk->readVariables())
+                reinit = true;
+        }
+
+        if(!reinit && az_jrk->isOpen()) {
+            if(!el_jrk->readVariables())
+                reinit = true;
+        }
+
+        if(reinit)
+            loadDevices();
+    }
+
+    if(reinit) {
+        az_jrk->setDevice(usb->get_device_by_sn(az_sn_));
+        el_jrk->setDevice(usb->get_device_by_sn(el_sn_));
+
+        open();
+    }
 }
 
 //---------------------------------------------------------------------------

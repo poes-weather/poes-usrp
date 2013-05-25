@@ -51,6 +51,8 @@ public:
     QStringList deviceNames(void);
     int  deviceIndex(bool az);
 
+    void check_and_reinit(bool force=false);
+
     bool open(void);
     void close(void);
 
@@ -93,6 +95,8 @@ private:
     TRotor  *rotor;
     TJrkUSB *az_jrk, *el_jrk;
     TUSB    *usb;
+
+    QString az_sn_, el_sn_;
 };
 
 #endif // JRK_H

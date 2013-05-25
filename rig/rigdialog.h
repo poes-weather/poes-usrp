@@ -89,6 +89,7 @@ private slots:
     void on_buttonBox_accepted();
     void on_monstrumStatusBtn_clicked();
     void on_wobbleBtn_clicked();
+    void on_jrkReinitBtn_clicked();
 };
 
 #endif // RIGDIALOG_H

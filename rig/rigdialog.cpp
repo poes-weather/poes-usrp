@@ -763,6 +763,22 @@ void RigDialog::on_jrkStatusBtn_clicked()
 }
 
 //---------------------------------------------------------------------------
+void RigDialog::on_jrkReinitBtn_clicked()
+{
+    m_ui->jrkAzCb->clear();
+    m_ui->jrkElCb->clear();
+
+    rig->rotor->jrk->check_and_reinit(true);
+
+    QStringList sl = rig->rotor->jrk->deviceNames();
+    m_ui->jrkAzCb->addItems(sl);
+    m_ui->jrkAzCb->setCurrentIndex(rig->rotor->jrk->deviceIndex(true) + 1);
+    m_ui->jrkElCb->addItems(sl);
+    m_ui->jrkElCb->setCurrentIndex(rig->rotor->jrk->deviceIndex(false) + 1);
+}
+
+
+//---------------------------------------------------------------------------
 void RigDialog::on_monstrumStatusBtn_clicked()
 {
     QMessageBox::information(this, "Monstrum X-Y Status", rig->rotor->getStatusString());
@@ -776,3 +792,5 @@ void RigDialog::on_wobbleBtn_clicked()
     else
         rig->rotor->wobble();
 }
+
+//---------------------------------------------------------------------------
